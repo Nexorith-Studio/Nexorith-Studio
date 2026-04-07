@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Syne, DM_Sans } from "next/font/google";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
 const syne = Syne({
@@ -19,13 +20,13 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
   ),
   title: {
-    default: "Nexorith — Web & AI Engineering Studio",
-    template: "%s · Nexorith",
+    default: "Nexorith Studio — Web & AI Engineering Studio",
+    template: "%s · Nexorith Studio",
   },
   description:
-    "Nexorith is a futuristic web and AI solutions agency building powerful digital products, SaaS platforms, and automation for ambitious teams.",
+    "Nexorith Studio is a futuristic web and AI solutions studio building powerful digital products, SaaS platforms, and automation for ambitious teams.",
   keywords: [
-    "Nexorith",
+    "Nexorith Studio",
     "web development",
     "AI solutions",
     "SaaS",
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     "digital transformation",
   ],
   openGraph: {
-    title: "Nexorith — Engineering the Future of Web & AI",
+    title: "Nexorith Studio — Engineering the Future of Web & AI",
     description:
       "Luxury-grade digital products, AI systems, and cloud-native platforms.",
     type: "website",
@@ -60,7 +61,9 @@ export default function RootLayout({
       <body
         className={`${syne.variable} ${dmSans.variable} font-sans antialiased`}
       >
-        {children}
+        <SmoothScroll>
+          {children}
+        </SmoothScroll>
       </body>
     </html>
   );

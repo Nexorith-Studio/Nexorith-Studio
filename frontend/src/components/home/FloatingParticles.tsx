@@ -20,7 +20,7 @@ export function FloatingParticles() {
         return (
           <motion.div
             key={`bokeh-${i}`}
-            className="absolute rounded-full bg-gradient-to-br from-cyan-400/15 to-violet-500/10 blur-2xl"
+            className="absolute rounded-full bg-gradient-to-br from-cyan-400/20 to-violet-500/15 blur-3xl"
             style={{
               width: size,
               height: size,
@@ -31,10 +31,10 @@ export function FloatingParticles() {
               reduce
                 ? undefined
                 : {
-                    y: [0, -20, 0],
-                    x: [0, 10, 0],
-                    opacity: [0.12, 0.35, 0.12],
-                    scale: [1, 1.08, 1],
+                    y: [0, -40, 0],
+                    x: [0, 20, 0],
+                    opacity: [0.15, 0.45, 0.15],
+                    scale: [1, 1.2, 1],
                   }
             }
             transition={{
@@ -69,9 +69,9 @@ export function FloatingParticles() {
               reduce
                 ? undefined
                 : {
-                    y: [0, -36, 0],
-                    opacity: [0.12, 0.65, 0.12],
-                    scale: [1, 1.5, 1],
+                    y: [0, -60, 0],
+                    opacity: [0.15, 0.8, 0.15],
+                    scale: [1, 2, 1],
                   }
             }
             transition={{
@@ -90,22 +90,24 @@ export function FloatingParticles() {
           key={`ring-${i}`}
           className="absolute rounded-full border border-white/[0.07]"
           style={{
-            width: 120 + i * 90,
-            height: 120 + i * 90,
-            left: `${18 + i * 22}%`,
-            top: `${12 + i * 8}%`,
+            width: 400 + i * 350,
+            height: 400 + i * 350,
+            left: `${-10 + i * 35}%`,
+            top: `${-10 + i * 15}%`,
           }}
           animate={
             reduce
               ? undefined
               : {
                   rotate: [0, 360],
-                  opacity: [0.06, 0.14, 0.06],
+                  opacity: [0.08, 0.25, 0.08],
+                  scale: [1, 1.1, 1],
                 }
           }
           transition={{
-            rotate: { duration: 48 + i * 12, repeat: Infinity, ease: "linear" },
-            opacity: { duration: 10 + i * 2, repeat: Infinity, ease: "easeInOut" },
+            rotate: { duration: 60 + i * 18, repeat: Infinity, ease: "linear" },
+            opacity: { duration: 12 + i * 3, repeat: Infinity, ease: "easeInOut" },
+            scale: { duration: 18 + i * 4, repeat: Infinity, ease: "easeInOut" },
           }}
         />
       ))}

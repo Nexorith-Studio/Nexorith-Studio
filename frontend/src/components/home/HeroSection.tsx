@@ -44,7 +44,7 @@ export function HeroSection() {
 
       <motion.div
         style={reduce ? undefined : { y: headlineY, opacity: headlineOpacity }}
-        className="relative z-[2] mx-auto flex max-w-7xl flex-col justify-center gap-14 pb-28 lg:min-h-[calc(100svh-4rem)] lg:flex-row lg:items-center lg:gap-20"
+        className="relative z-[2] mx-auto flex max-w-7xl flex-col justify-center gap-16 pb-24 pt-8 lg:min-h-[calc(100svh-4rem)] lg:flex-row lg:items-center lg:gap-20 lg:pt-0 lg:pb-28"
       >
         <div className="max-w-3xl flex-1">
           <motion.p
@@ -60,7 +60,7 @@ export function HeroSection() {
             Web · AI · SaaS
           </motion.p>
 
-          <AnimatedHeading line1="Engineering the Future" line2="of Web & AI" />
+          <AnimatedHeading line1="The Next-Generation" line2="AI & Web Studio" />
 
           <motion.p
             initial={{ opacity: 0, y: 28 }}
@@ -68,9 +68,7 @@ export function HeroSection() {
             transition={{ duration: 0.95, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="mt-10 max-w-xl text-lg leading-relaxed text-white/50 md:text-xl"
           >
-            Nexorith partners with ambitious teams to architect{" "}
-            <span className="text-white/80">cinematic digital products</span> — from
-            intelligent automation to flagship web experiences.
+            Nexorith Studio crafts <span className="text-white/80">AI-driven ecosystems</span> and hyper-scale web applications. Bold, massive, and intelligent.
           </motion.p>
 
           <motion.div
@@ -132,7 +130,7 @@ export function HeroSection() {
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.15, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto w-full max-w-md flex-1 lg:max-w-lg"
+          className="relative mx-auto mt-12 w-full max-w-md flex-1 lg:mt-0 lg:max-w-lg"
         >
           <div className="relative overflow-hidden rounded-[2rem] p-px">
             <motion.div

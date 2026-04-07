@@ -31,7 +31,7 @@ export function AnimatedHeading({ line1, line2, className = "" }: Props) {
 
   return (
     <h1
-      className={`font-display text-5xl font-bold leading-[1.06] tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl ${className}`}
+      className={`font-display text-4xl font-bold leading-[1.06] tracking-tight sm:text-5xl lg:text-7xl xl:text-8xl ${className}`}
       style={{ perspective: 1200 }}
     >
       <motion.span

@@ -8,7 +8,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const lines = [
   "We architect resilient digital infrastructure for the next decade of product velocity.",
-  "Nexorith unifies web craftsmanship, AI systems, and cloud-native scale — so your roadmap moves at the speed of ambition.",
+  "Nexorith Studio unifies web craftsmanship, AI systems, and cloud-native scale — so your roadmap moves at the speed of ambition.",
   "From first sketch to global launch, every interaction is considered, measured, and elevated.",
 ];
 
