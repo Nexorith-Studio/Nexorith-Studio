@@ -7,7 +7,6 @@ import { HeroSection } from "./HeroSection";
 import { VisionSection } from "./VisionSection";
 import { ServicesSection } from "./ServicesSection";
 import { TechStackSection } from "./TechStackSection";
-import { PortfolioSection } from "./PortfolioSection";
 import { ProcessSection } from "./ProcessSection";
 import { ContactSection } from "./ContactSection";
 import { Footer } from "./Footer";
@@ -24,7 +23,6 @@ export function ClientHome() {
           <VisionSection />
           <ServicesSection />
           <TechStackSection />
-          <PortfolioSection />
           <ProcessSection />
           <ContactSection />
         </main>

@@ -14,9 +14,6 @@ export function Footer() {
           <a href="#services" className="hover:text-white">
             Services
           </a>
-          <a href="#work" className="hover:text-white">
-            Work
-          </a>
           <a href="#contact" className="hover:text-white">
             Contact
           </a>
