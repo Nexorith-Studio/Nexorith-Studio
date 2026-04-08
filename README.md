@@ -198,3 +198,8 @@ cd frontend && npm run dev
 ```
 
 Or use a process manager / your hosting platform to run both services.
+
+## Troubleshooting
+
+### "Failed to fetch query"
+If the inquiry form shows "failed to fetch", ensure the **backend server** is running (`npm run dev` in `backend`) and that `NEXT_PUBLIC_API_URL` in the frontend matches the API origin.
