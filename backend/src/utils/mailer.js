@@ -15,8 +15,12 @@ function createTransport() {
   return nodemailer.createTransport({
     host: SMTP_HOST,
     port: SMTP_PORT,
-    secure: SMTP_PORT === 465,
+    secure: SMTP_PORT === 465, // true for port 465 (SSL), false for 587
+    requireTLS: SMTP_PORT === 587, // force STARTTLS on port 587
     auth: { user: SMTP_USER, pass: SMTP_PASS },
+    tls: {
+      rejectUnauthorized: false, // avoids cert issues on some servers
+    },
   });
 }
 
