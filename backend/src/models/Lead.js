@@ -8,6 +8,9 @@ const leadSchema = new mongoose.Schema(
     budgetRange: { type: String, required: true, trim: true, maxlength: 120 },
     message: { type: String, required: true, trim: true, maxlength: 8000 },
     contacted: { type: Boolean, default: false },
+    trackingId: { type: String, unique: true, index: true },
+    projectStatus: { type: String, default: "In Review" },
+    projectUpdate: { type: String, default: "" },
   },
   { timestamps: true }
 );

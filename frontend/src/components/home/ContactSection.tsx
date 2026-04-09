@@ -31,13 +31,15 @@ export function ContactSection() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
   const [errMsg, setErrMsg] = useState("");
+  const [trackingId, setTrackingId] = useState("");
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
     setErrMsg("");
+    setTrackingId("");
     try {
-      await submitLead({
+      const res = await submitLead({
         name,
         email,
         projectType,
@@ -45,6 +47,7 @@ export function ContactSection() {
         message,
       });
       setStatus("ok");
+      setTrackingId(res.trackingId);
       setName("");
       setEmail("");
       setMessage("");
@@ -161,9 +164,32 @@ export function ContactSection() {
               </label>
 
               {status === "ok" && (
-                <p className="text-sm text-emerald-300">
-                  Thank you — your request is received. We&apos;ll be in touch shortly.
-                </p>
+                <div className="rounded-2xl bg-emerald-500/10 p-6 border border-emerald-500/20">
+                  <p className="text-sm font-semibold text-emerald-300 mb-2">
+                    Inquiry Received Successfully
+                  </p>
+                  <p className="text-xs text-emerald-200/70 mb-4">
+                    Track your project progress using the ID below:
+                  </p>
+                  <div className="flex items-center justify-between gap-4 rounded-xl bg-black/40 px-4 py-3 border border-emerald-500/20 mb-4">
+                    <code className="text-lg font-mono font-bold text-emerald-300">
+                      {trackingId}
+                    </code>
+                    <button
+                      type="button"
+                      onClick={() => navigator.clipboard.writeText(trackingId)}
+                      className="text-[10px] uppercase tracking-widest text-emerald-400/60 hover:text-emerald-400"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-white/40 leading-relaxed">
+                    Save this ID. You can check your project's status anytime at{" "}
+                    <a href="/status" className="text-cyan-400 hover:underline">
+                      nexorith.io/status
+                    </a>
+                  </p>
+                </div>
               )}
               {status === "err" && (
                 <p className="text-sm text-rose-300">{errMsg}</p>

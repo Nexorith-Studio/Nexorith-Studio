@@ -10,6 +10,7 @@ import {
   deleteLead,
   fetchLeads,
   patchLeadContacted,
+  patchLeadStatus,
   type LeadRow,
 } from "@/lib/api";
 
@@ -174,9 +175,11 @@ export default function AdminDashboardPage() {
                     {new Date(lead.createdAt).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 font-medium text-white">{lead.name}</td>
+                  <td className="px-6 py-4 font-mono text-xs text-cyan-300">{lead.trackingId}</td>
                   <td className="px-6 py-4">{lead.email}</td>
                   <td className="px-6 py-4">{lead.projectType}</td>
                   <td className="px-6 py-4">{lead.budgetRange}</td>
+                  <td className="px-6 py-4 text-xs text-white/40">{lead.projectStatus}</td>
                   <td className="px-6 py-4">
                     <button
                       type="button"
@@ -210,27 +213,92 @@ export default function AdminDashboardPage() {
           )}
         </div>
 
-        <div className="mt-10 space-y-6">
+        <div className="mt-10 space-y-8">
           <h2 className="font-display text-xl font-semibold text-white">
-            Full messages
+            Manage Projects & Updates
           </h2>
           {leads.map((lead) => (
             <div
               key={`msg-${lead._id}`}
-              className="rounded-3xl border border-white/10 bg-black/30 p-6"
+              className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-8"
             >
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <p className="font-medium text-white">
-                  {lead.name}{" "}
-                  <span className="text-white/40">· {lead.email}</span>
-                </p>
-                <span className="text-xs text-white/40">
-                  {new Date(lead.createdAt).toLocaleString()}
-                </span>
+              <div className="mb-6 grid gap-6 lg:grid-cols-[1fr,2fr]">
+                <div>
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                    <p className="font-medium text-white">
+                      {lead.name}
+                    </p>
+                    <span className="font-mono text-xs text-cyan-300">
+                      {lead.trackingId}
+                    </span>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1">Email</p>
+                      <p className="text-sm text-white/70">{lead.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1">Date</p>
+                      <p className="text-sm text-white/70">{new Date(lead.createdAt).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1">Original Message</p>
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/60 bg-black/20 p-4 rounded-xl border border-white/5">
+                        {lead.message}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-6">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">Project Status & Client Updates</h3>
+                  
+                  <div className="grid gap-4">
+                    <div className="grid gap-2">
+                      <span className="text-[10px] uppercase tracking-wider text-white/50">Current Status</span>
+                      <select
+                        value={lead.projectStatus}
+                        onChange={async (e) => {
+                          try {
+                            await patchLeadStatus(lead._id, e.target.value, lead.projectUpdate);
+                            await load();
+                          } catch (err) {
+                            setError(err instanceof Error ? err.message : "Update failed");
+                          }
+                        }}
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2 text-sm text-white outline-none focus:border-cyan-400/50"
+                      >
+                        <option value="In Review">In Review</option>
+                        <option value="Discovery">Discovery</option>
+                        <option value="Design">Design</option>
+                        <option value="Development">Development</option>
+                        <option value="Beta Testing">Beta Testing</option>
+                        <option value="Launched">Launched</option>
+                        <option value="On Hold">On Hold</option>
+                      </select>
+                    </div>
+
+                    <div className="grid gap-2">
+                      <span className="text-[10px] uppercase tracking-wider text-white/50">Detailed Update (Visible to Client)</span>
+                      <textarea
+                        defaultValue={lead.projectUpdate}
+                        onBlur={async (e) => {
+                          if (e.target.value === lead.projectUpdate) return;
+                          try {
+                            await patchLeadStatus(lead._id, lead.projectStatus, e.target.value);
+                            await load();
+                          } catch (err) {
+                            setError(err instanceof Error ? err.message : "Update failed");
+                          }
+                        }}
+                        placeholder="Explain the current situation..."
+                        className="w-full h-32 resize-none rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-cyan-400/50"
+                      />
+                      <p className="text-[10px] text-white/30 italic">Changes are saved automatically when you click away.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/70">
-                {lead.message}
-              </p>
             </div>
           ))}
           {leads.length === 0 && (

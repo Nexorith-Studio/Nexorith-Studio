@@ -38,6 +38,27 @@ router.patch("/leads/:id", async (req, res) => {
   }
 });
 
+router.patch("/leads/:id/status", async (req, res) => {
+  try {
+    const { projectStatus, projectUpdate } = req.body || {};
+    if (typeof projectStatus !== "string" || typeof projectUpdate !== "string") {
+      return res.status(400).json({ error: "Invalid status or update." });
+    }
+    const lead = await Lead.findByIdAndUpdate(
+      req.params.id,
+      { projectStatus, projectUpdate },
+      { new: true }
+    );
+    if (!lead) {
+      return res.status(404).json({ error: "Not found." });
+    }
+    res.json(lead);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Could not update status." });
+  }
+});
+
 router.delete("/leads/:id", async (req, res) => {
   try {
     const result = await Lead.findByIdAndDelete(req.params.id);

@@ -21,7 +21,23 @@ export async function submitLead(body: {
   if (!res.ok) {
     throw new Error((data as { error?: string }).error || "Request failed");
   }
-  return data as { id: string; message: string };
+  return data as { id: string; trackingId: string; message: string };
+}
+
+export async function fetchLeadStatus(trackingId: string) {
+  const res = await fetch(apiUrl(`/api/leads/status/${trackingId}`));
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error((data as { error?: string }).error || "Failed to load status");
+  }
+  return data as {
+    name: string;
+    projectType: string;
+    projectStatus: string;
+    projectUpdate: string;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 export async function adminLogin(email: string, password: string) {
@@ -58,7 +74,11 @@ export type LeadRow = {
   budgetRange: string;
   message: string;
   contacted: boolean;
+  trackingId: string;
+  projectStatus: string;
+  projectUpdate: string;
   createdAt: string;
+  updatedAt: string;
 };
 
 export async function fetchLeads(sort: "newest" | "oldest") {
@@ -79,6 +99,23 @@ export async function patchLeadContacted(id: string, contacted: boolean) {
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ contacted }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error((data as { error?: string }).error || "Update failed");
+  }
+}
+
+export async function patchLeadStatus(
+  id: string,
+  projectStatus: string,
+  projectUpdate: string
+) {
+  const res = await fetch(apiUrl(`/api/admin/leads/${id}/status`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ projectStatus, projectUpdate }),
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));

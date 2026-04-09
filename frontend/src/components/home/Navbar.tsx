@@ -7,6 +7,7 @@ const links = [
   { href: "#vision", label: "Vision" },
   { href: "#services", label: "Services" },
   { href: "#process", label: "Process" },
+  { href: "/status", label: "Status", isExternal: true },
   { href: "#contact", label: "Contact" },
 ];
 
@@ -41,11 +42,17 @@ export function Navbar() {
           </span>
         </Link>
         <nav className="hidden items-center gap-10 md:flex">
-          {links.map((l) => (
-            <a key={l.href} href={l.href} className="nav-link-luxe">
-              {l.label}
-            </a>
-          ))}
+          {links.map((l) =>
+            l.isExternal ? (
+              <Link key={l.href} href={l.href} className="nav-link-luxe">
+                {l.label}
+              </Link>
+            ) : (
+              <a key={l.href} href={l.href} className="nav-link-luxe">
+                {l.label}
+              </a>
+            )
+          )}
         </nav>
         <div className="flex items-center gap-3">
           <Link

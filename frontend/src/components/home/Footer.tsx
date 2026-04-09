@@ -17,6 +17,9 @@ export function Footer() {
           <a href="#contact" className="hover:text-white">
             Contact
           </a>
+          <Link href="/status" className="hover:text-white">
+            Track Project
+          </Link>
           <Link href="/admin/login" className="hover:text-white">
             Admin
           </Link>
