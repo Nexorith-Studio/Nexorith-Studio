@@ -1,27 +1,25 @@
-const nodemailer = require("nodemailer");
-
-const SMTP_HOST = process.env.SMTP_HOST;
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || "587");
-const SMTP_USER = process.env.SMTP_USER;
-const SMTP_PASS = process.env.SMTP_PASS;
-const EMAIL_FROM = process.env.EMAIL_FROM || '"Nexorith Studio" <noreply@nexorith.tech>';
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const EMAIL_FROM = process.env.EMAIL_FROM || "Nexorith Studio <onboarding@resend.dev>";
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://nexorith.tech";
 
-function createTransport() {
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
-    console.warn("[mailer] SMTP not configured — emails will be skipped.");
-    return null;
+async function sendEmail({ to, subject, html }) {
+  if (!RESEND_API_KEY) {
+    console.warn("[mailer] RESEND_API_KEY not set — emails will be skipped.");
+    return;
   }
-  return nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: SMTP_PORT === 465, // true for port 465 (SSL), false for 587
-    requireTLS: SMTP_PORT === 587, // force STARTTLS on port 587
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
-    tls: {
-      rejectUnauthorized: false, // avoids cert issues on some servers
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify({ from: EMAIL_FROM, to, subject, html }),
   });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Resend API error ${res.status}`);
+  }
+  return res.json();
 }
 
 const baseStyle = `
@@ -72,9 +70,6 @@ function wrapEmail(content) {
  * Send inquiry confirmation email to a new lead.
  */
 async function sendInquiryConfirmation({ name, email, trackingId, projectType }) {
-  const transport = createTransport();
-  if (!transport) return;
-
   const statusUrl = `${FRONTEND_ORIGIN}/status`;
   const html = wrapEmail(`
     <h1 style="margin:0 0 8px;font-size:26px;font-weight:700;color:#fff;">We received your inquiry</h1>
@@ -105,8 +100,7 @@ async function sendInquiryConfirmation({ name, email, trackingId, projectType })
     </p>
   `);
 
-  await transport.sendMail({
-    from: EMAIL_FROM,
+  await sendEmail({
     to: email,
     subject: `[Nexorith] Your inquiry received — Tracking ID: ${trackingId}`,
     html,
@@ -118,9 +112,6 @@ async function sendInquiryConfirmation({ name, email, trackingId, projectType })
  * Send status update notification to a lead.
  */
 async function sendStatusUpdate({ name, email, trackingId, projectStatus, projectUpdate }) {
-  const transport = createTransport();
-  if (!transport) return;
-
   const statusUrl = `${FRONTEND_ORIGIN}/status`;
   const html = wrapEmail(`
     <h1 style="margin:0 0 8px;font-size:26px;font-weight:700;color:#fff;">Project status updated</h1>
@@ -157,8 +148,7 @@ async function sendStatusUpdate({ name, email, trackingId, projectStatus, projec
     </p>
   `);
 
-  await transport.sendMail({
-    from: EMAIL_FROM,
+  await sendEmail({
     to: email,
     subject: `[Nexorith] Project update: ${projectStatus} — ${trackingId}`,
     html,
