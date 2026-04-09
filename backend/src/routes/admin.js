@@ -1,6 +1,7 @@
 const express = require("express");
 const Lead = require("../models/Lead");
 const { requireAdmin } = require("../middleware/auth");
+const { sendStatusUpdate } = require("../utils/mailer");
 
 const router = express.Router();
 
@@ -52,6 +53,16 @@ router.patch("/leads/:id/status", async (req, res) => {
     if (!lead) {
       return res.status(404).json({ error: "Not found." });
     }
+
+    // Send status update email to client (non-blocking)
+    sendStatusUpdate({
+      name: lead.name,
+      email: lead.email,
+      trackingId: lead.trackingId,
+      projectStatus: lead.projectStatus,
+      projectUpdate: lead.projectUpdate,
+    }).catch((err) => console.error("[mailer] Status update email failed:", err.message));
+
     res.json(lead);
   } catch (err) {
     console.error(err);
