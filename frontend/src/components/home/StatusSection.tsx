@@ -26,7 +26,7 @@ export function StatusSection() {
               Track your <span className="text-gradient-cyan-violet">Vision</span>
             </h2>
             <p className="mt-8 max-w-2xl text-lg text-white/50 leading-relaxed md:text-xl">
-              Transparency is at our core. If we've started your journey, use your unique Project ID to monitor real-time progress, milestones, and direct updates from our team.
+              Transparency is at our core. If we&apos;ve started your journey, use your unique Project ID to monitor real-time progress, milestones, and direct updates from our team.
             </p>
             
             <div className="mt-12 flex flex-col sm:flex-row gap-6">

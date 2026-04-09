@@ -6,9 +6,18 @@ import { fetchLeadStatus } from "@/lib/api";
 import Link from "next/link";
 import { LuxuryAmbient } from "@/components/home/LuxuryAmbient";
 
+interface LeadData {
+  name: string;
+  projectType: string;
+  projectStatus: string;
+  projectUpdate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function StatusPage() {
   const [trackingId, setTrackingId] = useState("");
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<LeadData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 

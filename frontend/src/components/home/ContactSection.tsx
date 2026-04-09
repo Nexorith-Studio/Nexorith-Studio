@@ -184,7 +184,7 @@ export function ContactSection() {
                     </button>
                   </div>
                   <p className="text-[11px] text-white/40 leading-relaxed">
-                    Save this ID. You can check your project's status anytime at{" "}
+                    Save this ID. You can check your project&apos;s status anytime at{" "}
                     <a href="/status" className="text-cyan-400 hover:underline">
                       nexorith.io/status
                     </a>
