@@ -96,7 +96,7 @@ async function sendInquiryConfirmation({ name, email, trackingId, projectType })
     </div>
 
     <p style="margin:0;color:rgba(255,255,255,0.3);font-size:12px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
-      Questions? Reply to this email or reach us at <a href="mailto:partnerships@nexorith.io" style="color:rgba(103,232,249,0.6);text-decoration:none;">partnerships@nexorith.io</a>
+      Questions? Reply to this email or reach us at <a href="https://nexorith.tech" style="color:rgba(103,232,249,0.6);text-decoration:none;">nexorith.tech</a>
     </p>
   `);
 
@@ -144,7 +144,7 @@ async function sendStatusUpdate({ name, email, trackingId, projectStatus, projec
     </div>
 
     <p style="margin:0;color:rgba(255,255,255,0.3);font-size:12px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
-      Questions? Reply to this email or reach us at <a href="mailto:partnerships@nexorith.io" style="color:rgba(103,232,249,0.6);text-decoration:none;">partnerships@nexorith.io</a>
+      Questions? Reply to this email or reach us at <a href="https://nexorith.tech" style="color:rgba(103,232,249,0.6);text-decoration:none;">nexorith.tech</a>
     </p>
   `);
 
