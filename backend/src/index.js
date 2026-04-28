@@ -13,7 +13,7 @@ const adminRouter = require("./routes/admin");
 const app = express();
 const PORT = process.env.PORT || 4000;
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/nexorith";
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://nexorith.tech";
 
 app.set("trust proxy", 1);
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
@@ -21,7 +21,8 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 const allowedOrigins = [
   "http://localhost:3000",
   "https://nexorith.tech",
-  /\.vercel\.app$/ 
+  "https://www.nexorith.tech",
+  /\.vercel\.app$/
 ];
 
 app.use(
