@@ -15,7 +15,7 @@ const projectTypes = [
   "Other",
 ];
 
-const budgetOptions = [
+const budgets = [
   "₹5k – ₹20k",
   "₹20k – ₹50k",
   "₹50k – ₹1L",
