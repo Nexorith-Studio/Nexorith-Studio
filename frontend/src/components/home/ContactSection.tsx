@@ -15,17 +15,19 @@ const projectTypes = [
   "Other",
 ];
 
-const budgets = [
-  "$10k – $25k",
-  "$25k – $50k",
-  "$50k – $100k",
-  "$100k+",
+const budgetOptions = [
+  "₹5k – ₹20k",
+  "₹20k – ₹50k",
+  "₹50k – ₹1L",
+  "₹1L – ₹3L",
+  "₹3L+",
   "Discuss with team",
 ];
 
 export function ContactSection() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  // const [phone, setPhone] = useState("");
   const [projectType, setProjectType] = useState(projectTypes[0]);
   const [budgetRange, setBudgetRange] = useState(budgets[0]);
   const [message, setMessage] = useState("");
@@ -103,19 +105,21 @@ export function ContactSection() {
                     placeholder="Alex Rivera"
                   />
                 </label>
-                <label className="block">
+               <label className="block">
                   <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-white/45">
-                    Email
+                     Email
                   </span>
-                  <input
-                    required
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-cyan-400/50"
-                    placeholder="you@company.com"
-                  />
-                </label>
+              <input
+                  required
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-cyan-400/50"
+                  placeholder="you@company.com"
+                />
+              </label>
+
+
               </div>
               <label className="block">
                 <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-white/45">
