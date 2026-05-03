@@ -40,6 +40,19 @@ const services = [
     desc: "Legacy modernization with zero-downtime migration paths.",
     tag: "Enterprise",
   },
+   // NEW SERVICE 1
+  {
+    title: "Website Maintenance & Redesign",
+    desc: "Continuous updates, performance improvements, and modern redesigns to keep your website fast, secure, and relevant.",
+    tag: "Growth",
+  },
+
+  // NEW SERVICE 2
+  {
+    title: "Social Media Marketing",
+    desc: "Content strategy, brand growth, and lead generation through our upcoming marketing division — Nexorith Marketing.",
+    tag: "Marketing",
+  },
 ];
 
 const container = {
