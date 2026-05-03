@@ -12,6 +12,8 @@ const projectTypes = [
   "Automation",
   "UI/UX Design",
   "Digital Transformation",
+  "Website Maintenance / Redesign",
+  "Social Media Marketing (Upcoming)",
   "Other",
 ];
 
