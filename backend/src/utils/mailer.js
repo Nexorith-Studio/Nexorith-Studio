@@ -94,13 +94,22 @@ async function sendInquiryConfirmation({ name, email, trackingId, projectType })
         Track Your Project
       </a>
     </div>
+const html = wrapEmail(`
+  <p style="margin:0;color:rgba(255,255,255,0.3);font-size:12px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
+    Questions? Reach us at 
+    <a href="mailto:contact@nexorith.tech" style="color:rgba(103,232,249,0.6);text-decoration:none;">
+      contact@nexorith.tech
+    </a>
+  </p>
 
-    <p style="margin:0;color:rgba(255,255,255,0.3);font-size:12px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
-      Questions? Reach us at <a href="contact@nexorith.tech" style="color:rgba(103,232,249,0.6);text-decoration:none;">contact@nexorith.tech</a>
-    </p>
-  `);\u003Cdiv style=\"background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.2);border-radius:16px;padding:24px;margin-bottom:28px;text-align:center;\">
-
-  await sendEmail({
+  <div style="background:rgba(34,211,238,0.06);
+              border:1px solid rgba(34,211,238,0.2);
+              border-radius:16px;
+              padding:24px;
+              margin-bottom:28px;
+              text-align:center;">
+  </div>
+`);  await sendEmail({
     to: email,
     subject: `[Nexorith] Your inquiry received — Tracking ID: ${trackingId}`,
     html,
