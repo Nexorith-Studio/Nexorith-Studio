@@ -77,7 +77,7 @@ export function ContactSection() {
               next steps and a tailored proposal.
             </p>
             <div className="mt-12 space-y-4 text-sm text-white/40">
-              <p>New business · partnerships@nexorith.io</p>
+              <p>New business · contact@nexorith.tech</p>
               <p>Global · Remote-first studio</p>
             </div>
           </div>
