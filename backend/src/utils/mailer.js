@@ -96,9 +96,9 @@ async function sendInquiryConfirmation({ name, email, trackingId, projectType })
     </div>
 
     <p style="margin:0;color:rgba(255,255,255,0.3);font-size:12px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
-      Questions? Reply to this email or reach us at <a href="https://nexorith.tech" style="color:rgba(103,232,249,0.6);text-decoration:none;">nexorith.tech</a>
+      Questions? Reach us at <a href="contact@nexorith.tech" style="color:rgba(103,232,249,0.6);text-decoration:none;">contact@nexorith.tech</a>
     </p>
-  `);
+  `);\u003Cdiv style=\"background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.2);border-radius:16px;padding:24px;margin-bottom:28px;text-align:center;\">
 
   await sendEmail({
     to: email,
