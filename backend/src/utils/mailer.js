@@ -96,7 +96,7 @@ async function sendInquiryConfirmation({ name, email, trackingId, projectType })
     </div>
 
 
-
+`);
 
 
    await sendEmail({
