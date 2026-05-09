@@ -20,7 +20,7 @@ export function Footer() {
           <Link href="/status" className="hover:text-white">
             Track Project
           </Link>
-          {\* <Link href="/admin/login" className="hover:text-white">
+          {/* <Link href="/admin/login" className="hover:text-white">
             Admin
           </Link> */}
         </div>
