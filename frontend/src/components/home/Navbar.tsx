@@ -55,12 +55,12 @@ export function Navbar() {
           )}
         </nav>
         <div className="flex items-center gap-3">
-       /* <Link
+          {/* <Link
             href="/admin/login"
             className="hidden text-xs text-black/30 transition hover:text-black/65 sm:inline"
           >
             Admin
-          </Link>    */
+          </Link>    */}
           <motion.a
             href="#contact"
             whileHover={{ scale: 1.04 }}
