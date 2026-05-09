@@ -57,7 +57,7 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <Link
             href="/admin/login"
-            className="hidden text-xs text-white/30 transition hover:text-white/65 sm:inline"
+            className="hidden text-xs text-black/30 transition hover:text-black/65 sm:inline"
           >
             Admin
           </Link>
