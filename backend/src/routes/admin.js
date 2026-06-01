@@ -1,7 +1,9 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const Lead = require("../models/Lead");
 const { requireAdmin } = require("../middleware/auth");
 const { sendStatusUpdate } = require("../utils/mailer");
+const { fetchAdminConfig, saveAdminPasswordHash } = require("../utils/adminConfig");
 
 const router = express.Router();
 
@@ -67,6 +69,32 @@ router.patch("/leads/:id/status", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Could not update status." });
+  }
+});
+
+router.patch("/password", async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body || {};
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: "Current password and new password are required." });
+    }
+    if (typeof newPassword !== "string" || newPassword.length < 8) {
+      return res.status(400).json({ error: "New password must be at least 8 characters." });
+    }
+
+    const adminConfig = await fetchAdminConfig();
+    const isCurrentValid = await bcrypt.compare(String(currentPassword), adminConfig.passwordHash);
+    if (!isCurrentValid) {
+      return res.status(401).json({ error: "Current password is incorrect." });
+    }
+
+    const passwordHash = await bcrypt.hash(String(newPassword), 12);
+    await saveAdminPasswordHash(passwordHash);
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Could not reset password." });
   }
 });
 

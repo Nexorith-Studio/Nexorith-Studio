@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const rateLimit = require("express-rate-limit");
+const { fetchAdminConfig } = require("../utils/adminConfig");
 
 const router = express.Router();
 
@@ -15,39 +16,22 @@ const loginLimiter = rateLimit({
 router.post("/login", loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body || {};
-    
-    // Emergency Fallback (in case env vars are missing or forgotten)
-    const EMERGENCY_EMAIL = "admin@nexorith.io";
-    const EMERGENCY_HASH = "$2b$12$V3aA/NcP.fW5qGRkrOuVB.40GFepKeUq5VbMiyD3PH7ZQf3IBUWfK"; // password123
-
-    let adminEmail = process.env.ADMIN_EMAIL || EMERGENCY_EMAIL;
-    let adminHash = process.env.ADMIN_PASSWORD_HASH || EMERGENCY_HASH;
-    let jwtSecret = process.env.JWT_SECRET || "4f7b6a9c2d8e5f1a3b0c4d9e8f7a6b5c";
+    const jwtSecret = process.env.JWT_SECRET || "4f7b6a9c2d8e5f1a3b0c4d9e8f7a6b5c";
 
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password required." });
     }
 
-    // Check against current email (env or fallback)
-    const isMainMatch = String(email).toLowerCase() === String(adminEmail).toLowerCase();
-    const isEmergencyMatch = String(email).toLowerCase() === EMERGENCY_EMAIL;
+    const adminConfig = await fetchAdminConfig();
+    const isEmailMatch = String(email).toLowerCase() === String(adminConfig.email).toLowerCase();
+    const passwordMatches = await bcrypt.compare(String(password), adminConfig.passwordHash);
 
-    let authenticated = false;
-    let finalEmail = adminEmail;
-
-    if (isMainMatch && await bcrypt.compare(String(password), adminHash)) {
-      authenticated = true;
-    } else if (isEmergencyMatch && await bcrypt.compare(String(password), EMERGENCY_HASH)) {
-      authenticated = true;
-      finalEmail = EMERGENCY_EMAIL;
-    }
-
-    if (!authenticated) {
+    if (!isEmailMatch || !passwordMatches) {
       return res.status(401).json({ error: "Invalid credentials." });
     }
 
     const token = jwt.sign(
-      { role: "admin", email: finalEmail },
+      { role: "admin", email: adminConfig.email },
       jwtSecret,
       { expiresIn: "7d" }
     );

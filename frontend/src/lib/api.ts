@@ -55,6 +55,19 @@ export async function adminLogin(email: string, password: string) {
   return data;
 }
 
+export async function resetAdminPassword(currentPassword: string, newPassword: string) {
+  const res = await fetch(apiUrl("/api/admin/password"), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error((data as { error?: string }).error || "Password reset failed");
+  }
+}
+
 export async function adminMe() {
   const res = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
   return res.json() as Promise<{ authenticated: boolean; email?: string }>;

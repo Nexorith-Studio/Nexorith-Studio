@@ -11,6 +11,7 @@ import {
   fetchLeads,
   patchLeadContacted,
   patchLeadStatus,
+  resetAdminPassword,
   type LeadRow,
 } from "@/lib/api";
 
@@ -20,6 +21,13 @@ export default function AdminDashboardPage() {
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [error, setError] = useState("");
+  const [resetCurrent, setResetCurrent] = useState("");
+  const [resetNew, setResetNew] = useState("");
+  const [resetConfirm, setResetConfirm] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [resetSuccess, setResetSuccess] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const load = useCallback(async () => {
     setError("");
@@ -68,6 +76,34 @@ export default function AdminDashboardPage() {
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Delete failed");
+    }
+  }
+
+  async function handlePasswordReset(e: React.FormEvent) {
+    e.preventDefault();
+    setResetError("");
+    setResetSuccess("");
+
+    if (resetNew !== resetConfirm) {
+      setResetError("New passwords do not match.");
+      return;
+    }
+    if (resetNew.length < 8) {
+      setResetError("Password must be at least 8 characters.");
+      return;
+    }
+
+    try {
+      setResetLoading(true);
+      await resetAdminPassword(resetCurrent, resetNew);
+      setResetSuccess("Password updated successfully.");
+      setResetCurrent("");
+      setResetNew("");
+      setResetConfirm("");
+    } catch (err) {
+      setResetError(err instanceof Error ? err.message : "Could not reset password.");
+    } finally {
+      setResetLoading(false);
     }
   }
 
@@ -128,6 +164,17 @@ export default function AdminDashboardPage() {
               className="rounded-full border border-white/15 px-5 py-2 text-sm text-white/80 hover:bg-white/5"
             >
               Refresh
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setResetError("");
+                setResetSuccess("");
+                setShowResetModal(true);
+              }}
+              className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-5 py-2 text-sm text-cyan-100 transition hover:bg-cyan-400/20"
+            >
+              Reset password
             </button>
             <button
               type="button"
@@ -222,6 +269,95 @@ export default function AdminDashboardPage() {
           <h2 className="font-display text-xl font-semibold text-white">
             Manage Projects & Updates
           </h2>
+
+          {showResetModal && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6"
+              onClick={() => setShowResetModal(false)}
+            >
+              <div
+                className="relative w-full max-w-md rounded-[2rem] border border-white/10 bg-[#0b1220] p-8 shadow-2xl shadow-black/50"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setShowResetModal(false)}
+                  className="absolute right-4 top-4 rounded-full bg-white/5 p-2 text-white/70 transition hover:bg-white/10"
+                  aria-label="Close password reset"
+                >
+                  ×
+                </button>
+                <div className="mb-6">
+                  <p className="font-display text-lg font-semibold text-white">
+                    Reset admin password
+                  </p>
+                  <p className="text-sm text-white/45">
+                    Enter your current password and choose a new one.
+                  </p>
+                </div>
+
+                <form onSubmit={handlePasswordReset} className="grid gap-4">
+                  <label className="block">
+                    <span className="mb-2 block text-[10px] uppercase tracking-wider text-white/50">
+                      Current password
+                    </span>
+                    <input
+                      required
+                      type="password"
+                      value={resetCurrent}
+                      onChange={(e) => setResetCurrent(e.target.value)}
+                      className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-cyan-400/50"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-[10px] uppercase tracking-wider text-white/50">
+                      New password
+                    </span>
+                    <input
+                      required
+                      type="password"
+                      value={resetNew}
+                      onChange={(e) => setResetNew(e.target.value)}
+                      className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-cyan-400/50"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-[10px] uppercase tracking-wider text-white/50">
+                      Confirm new password
+                    </span>
+                    <input
+                      required
+                      type="password"
+                      value={resetConfirm}
+                      onChange={(e) => setResetConfirm(e.target.value)}
+                      className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-cyan-400/50"
+                    />
+                  </label>
+
+                  {resetError && <p className="text-sm text-rose-300">{resetError}</p>}
+                  {resetSuccess && <p className="text-sm text-emerald-300">{resetSuccess}</p>}
+
+                  <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
+                    <button
+                      type="submit"
+                      disabled={resetLoading}
+                      className="w-full rounded-full bg-gradient-to-r from-cyan-400 to-violet-500 py-3 text-sm font-semibold text-zinc-950 disabled:opacity-50 sm:w-auto sm:px-8"
+                    >
+                      {resetLoading ? "Updating password…" : "Update password"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowResetModal(false)}
+                      className="w-full rounded-full border border-white/10 bg-white/5 py-3 text-sm text-white transition hover:bg-white/10 sm:w-auto sm:px-6"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
           {leads.map((lead) => (
             <div
               key={`msg-${lead._id}`}
