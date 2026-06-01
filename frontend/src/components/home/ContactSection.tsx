@@ -29,7 +29,7 @@ const budgets = [
 export function ContactSection() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  // const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("");
   const [projectType, setProjectType] = useState(projectTypes[0]);
   const [budgetRange, setBudgetRange] = useState(budgets[0]);
   const [message, setMessage] = useState("");
@@ -46,6 +46,7 @@ export function ContactSection() {
       const res = await submitLead({
         name,
         email,
+        phone,
         projectType,
         budgetRange,
         message,
@@ -54,6 +55,7 @@ export function ContactSection() {
       setTrackingId(res.trackingId);
       setName("");
       setEmail("");
+      setPhone("");
       setMessage("");
     } catch (err) {
       setStatus("err");
@@ -107,22 +109,32 @@ export function ContactSection() {
                     placeholder="Alex Rivera"
                   />
                 </label>
-               <label className="block">
+                <label className="block">
                   <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-white/45">
-                     Email
+                    Email
                   </span>
-              <input
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  <input
+                    required
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-cyan-400/50"
+                    placeholder="you@company.com"
+                  />
+                </label>
+              </div>
+              <label className="block">
+                <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-white/45">
+                  Phone
+                </span>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-cyan-400/50"
-                  placeholder="you@company.com"
+                  placeholder="+91 98765 43210"
                 />
               </label>
-
-
-              </div>
               <label className="block">
                 <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-white/45">
                   Project type

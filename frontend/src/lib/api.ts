@@ -8,6 +8,7 @@ export function apiUrl(path: string) {
 export async function submitLead(body: {
   name: string;
   email: string;
+  phone?: string;
   projectType: string;
   budgetRange: string;
   message: string;
@@ -70,6 +71,7 @@ export type LeadRow = {
   _id: string;
   name: string;
   email: string;
+  phone?: string;
   projectType: string;
   budgetRange: string;
   message: string;

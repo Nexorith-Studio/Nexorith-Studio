@@ -4,6 +4,7 @@ const leadSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 200 },
     email: { type: String, required: true, trim: true, lowercase: true, maxlength: 320 },
+    phone: { type: String, trim: true, maxlength: 40 },
     projectType: { type: String, required: true, trim: true, maxlength: 120 },
     budgetRange: { type: String, required: true, trim: true, maxlength: 120 },
     message: { type: String, required: true, trim: true, maxlength: 8000 },

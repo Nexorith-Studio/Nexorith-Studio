@@ -158,10 +158,12 @@ export default function AdminDashboardPage() {
                 <th className="px-6 py-4 font-medium">Date</th>
                 <th className="px-6 py-4 font-medium">Name</th>
                 <th className="px-6 py-4 font-medium">Email</th>
+                <th className="px-6 py-4 font-medium">Phone</th>
                 <th className="px-6 py-4 font-medium">Type</th>
                 <th className="px-6 py-4 font-medium">Budget</th>
                 <th className="px-6 py-4 font-medium">Status</th>
                 <th className="px-6 py-4 font-medium">Actions</th>
+                <th className="px-6 py-4 font-medium">Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -174,9 +176,12 @@ export default function AdminDashboardPage() {
                   <td className="whitespace-nowrap px-6 py-4 text-white/50">
                     {new Date(lead.createdAt).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 font-medium text-white">{lead.name}</td>
-                  <td className="px-6 py-4 font-mono text-xs text-cyan-300">{lead.trackingId}</td>
-                  <td className="px-6 py-4">{lead.email}</td>
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">{lead.name}</div>
+                    <div className="text-[11px] text-white/40">{lead.trackingId}</div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-white/70">{lead.email}</td>
+                  <td className="px-6 py-4 text-sm text-white/70">{lead.phone || "—"}</td>
                   <td className="px-6 py-4">{lead.projectType}</td>
                   <td className="px-6 py-4">{lead.budgetRange}</td>
                   <td className="px-6 py-4 text-xs text-white/40">{lead.projectStatus}</td>
@@ -236,6 +241,10 @@ export default function AdminDashboardPage() {
                     <div>
                       <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1">Email</p>
                       <p className="text-sm text-white/70">{lead.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1">Phone</p>
+                      <p className="text-sm text-white/70">{lead.phone || "—"}</p>
                     </div>
                     <div>
                       <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1">Date</p>

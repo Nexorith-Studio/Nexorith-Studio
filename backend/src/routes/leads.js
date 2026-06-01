@@ -20,7 +20,7 @@ const submitLimiter = rateLimit({
 
 router.post("/", submitLimiter, async (req, res) => {
   try {
-    const { name, email, projectType, budgetRange, message } = req.body || {};
+    const { name, email, phone, projectType, budgetRange, message } = req.body || {};
     if (!name || !email || !projectType || !budgetRange || !message) {
       return res.status(400).json({ error: "All fields are required." });
     }
@@ -36,6 +36,7 @@ router.post("/", submitLimiter, async (req, res) => {
     const lead = await Lead.create({
       name: String(name),
       email: String(email),
+      phone: phone ? String(phone) : undefined,
       projectType: String(projectType),
       budgetRange: String(budgetRange),
       message: String(message),
