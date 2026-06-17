@@ -22,6 +22,7 @@ export function ProcessSection() {
     if (!line) return;
 
     const ctx = gsap.context(() => {
+      // Animate the laser pulse line height matching scroll progress
       gsap.fromTo(
         line,
         { scaleY: 0 },
@@ -30,27 +31,45 @@ export function ProcessSection() {
           ease: "none",
           scrollTrigger: {
             trigger: root.current,
-            start: "top 65%",
-            end: "bottom 45%",
+            start: "top 60%",
+            end: "bottom 70%",
             scrub: true,
           },
           transformOrigin: "top center",
         }
       );
 
+      // Light up nodes and cards dynamically as they scroll into view
       steps.forEach((_, i) => {
+        // Node pulse
         gsap.fromTo(
-          `.process-step-${i}`,
-          { opacity: 0.2, x: -16 },
+          `.process-node-${i}`,
+          { backgroundColor: "rgba(255,255,255,0.08)", scale: 1, boxShadow: "none" },
           {
-            opacity: 1,
-            x: 0,
-            ease: "power2.out",
+            backgroundColor: "#6ee7ff",
+            scale: 1.35,
+            boxShadow: "0 0 16px rgba(110,231,255,0.8)",
             scrollTrigger: {
               trigger: `.process-step-${i}`,
-              start: "top 78%",
-              end: "top 55%",
-              scrub: true,
+              start: "top 65%",
+              end: "bottom 55%",
+              toggleActions: "play reverse play reverse",
+            },
+          }
+        );
+
+        // Card border hover/focus glow
+        gsap.fromTo(
+          `.process-step-${i}`,
+          { borderColor: "rgba(255,255,255,0.08)", boxShadow: "none" },
+          {
+            borderColor: "rgba(110,231,255,0.35)",
+            boxShadow: "0 0 45px -15px rgba(110,231,255,0.3)",
+            scrollTrigger: {
+              trigger: `.process-step-${i}`,
+              start: "top 65%",
+              end: "bottom 55%",
+              toggleActions: "play reverse play reverse",
             },
           }
         );
@@ -64,11 +83,11 @@ export function ProcessSection() {
     <section
       id="process"
       ref={root}
-      className="scroll-mt-24 px-6 py-28 lg:px-10"
+      className="scroll-mt-24 px-6 py-28 lg:px-10 relative"
     >
       <div className="mx-auto max-w-7xl">
-        <div className="mb-16 max-w-2xl">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300/80">
+        <div className="mb-20 max-w-2xl">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-300/80">
             Process
           </p>
           <h2 className="font-display text-4xl font-bold text-white md:text-5xl">
@@ -76,36 +95,45 @@ export function ProcessSection() {
           </h2>
         </div>
 
-        <div className="relative grid gap-12 lg:grid-cols-[1fr_2fr]">
-          <div className="relative hidden lg:block">
-            <div className="sticky top-32">
-              <div className="relative h-[420px] w-2 rounded-full bg-white/5">
+        {/* Outer Conduit Grid */}
+        <div className="relative flex flex-col gap-10">
+          {/* Static Background Conduit Track */}
+          <div className="absolute left-[39px] top-6 bottom-6 w-[2px] bg-white/5 hidden lg:block" />
+          
+          {/* Glowing Active Laser Pulse */}
+          <div
+            ref={lineRef}
+            className="absolute left-[39px] top-6 bottom-6 w-[2px] bg-gradient-to-b from-cyan-400 via-cyan-300 to-violet-500 hidden lg:block origin-top"
+          />
+
+          {steps.map((s, i) => (
+            <div
+              key={s.title}
+              className="grid grid-cols-1 lg:grid-cols-[80px_1fr] gap-6 lg:gap-12 relative items-center"
+            >
+              {/* Left Column Node */}
+              <div className="hidden lg:flex justify-center z-10">
                 <div
-                  ref={lineRef}
-                  className="absolute left-0 top-0 h-full w-full origin-top rounded-full bg-gradient-to-b from-cyan-400 to-violet-500"
+                  className={`process-node-${i} h-4 w-4 rounded-full border border-[#030306] bg-white/10 transition-all duration-300`}
                 />
               </div>
-            </div>
-          </div>
-
-          <div className="space-y-12">
-            {steps.map((s, i) => (
+              
+              {/* Right Column Step Card */}
               <div
-                key={s.title}
-                className={`process-step-${i} glass-panel rounded-3xl p-10`}
+                className={`process-step-${i} glass-panel rounded-3xl p-10 border border-white/[0.08] bg-white/[0.03] transition-all duration-300`}
               >
-                <div className="mb-3 flex items-center gap-4">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-sm font-bold text-cyan-200">
+                <div className="mb-4 flex items-center gap-4">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-sm font-bold text-cyan-200">
                     {i + 1}
                   </span>
                   <h3 className="font-display text-2xl font-semibold text-white">
                     {s.title}
                   </h3>
                 </div>
-                <p className="text-white/55">{s.detail}</p>
+                <p className="text-white/55 leading-relaxed">{s.detail}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

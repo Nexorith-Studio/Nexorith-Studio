@@ -226,3 +226,54 @@ body {
   animation: scanline 4s linear infinite;
 }
 
+@keyframes float-bokeh {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(20px, -40px) scale(1.2);
+    opacity: 0.45;
+  }
+}
+
+@keyframes float-spark {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translateY(-60px) scale(2);
+    opacity: 0.8;
+  }
+}
+
+@keyframes rotate-ring {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    opacity: 0.08;
+    scale: 1;
+  }
+  50% {
+    opacity: 0.25;
+    scale: 1.1;
+  }
+}
+
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-transform-opacity {
+  will-change: transform, opacity;
+}
+
+

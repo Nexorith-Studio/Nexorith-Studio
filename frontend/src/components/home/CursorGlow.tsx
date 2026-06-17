@@ -96,11 +96,32 @@ export function CursorGlow() {
           decay: burst ? Math.random() * 0.035 + 0.025 : Math.random() * 0.025 + 0.015,
         });
       }
+      startAnimation();
     };
 
-    // Animation loop
-    let animId: number;
+    // Animation loop control
+    let animId: number | null = null;
+    const isAnimating = { current: false };
+
+    const startAnimation = () => {
+      if (!isAnimating.current) {
+        isAnimating.current = true;
+        render();
+      }
+    };
+
     const render = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        isAnimating.current = false;
+        return;
+      }
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        isAnimating.current = false;
+        return;
+      }
+
       ctx.clearRect(0, 0, canvas.width / window.devicePixelRatio, canvas.height / window.devicePixelRatio);
 
       // 1. Render ripples
@@ -146,9 +167,16 @@ export function CursorGlow() {
       }
 
       ctx.shadowBlur = 0; // Reset shadow effects
+
+      if (ripples.length === 0 && particles.length === 0) {
+        ctx.clearRect(0, 0, canvas.width / window.devicePixelRatio, canvas.height / window.devicePixelRatio);
+        isAnimating.current = false;
+        animId = null;
+        return;
+      }
+
       animId = requestAnimationFrame(render);
     };
-    render();
 
     // Event listeners
     const onMouseMove = (e: MouseEvent) => {
@@ -156,13 +184,12 @@ export function CursorGlow() {
       x.set(e.clientX);
       y.set(e.clientY);
 
-      lastMousePos.current = { x: e.clientX, y: e.clientY };
-
       // Emit trail particle if cursor moved enough
       const dx = Math.abs(e.clientX - lastMousePos.current.x);
       const dy = Math.abs(e.clientY - lastMousePos.current.y);
       if (dx > 2 || dy > 2) {
         spawnParticles(e.clientX, e.clientY, 1);
+        lastMousePos.current = { x: e.clientX, y: e.clientY };
       }
 
       // Lock-on target detection
@@ -186,6 +213,7 @@ export function CursorGlow() {
         alpha: 1,
         decay: 0.05,
       });
+      startAnimation();
     };
 
     const onMouseUp = () => {
@@ -204,7 +232,7 @@ export function CursorGlow() {
     document.addEventListener("mouseleave", onMouseLeaveWindow, { passive: true });
 
     return () => {
-      cancelAnimationFrame(animId);
+      if (animId !== null) cancelAnimationFrame(animId);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mousedown", onMouseDown);

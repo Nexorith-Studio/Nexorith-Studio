@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 
 const seeds = Array.from({ length: 64 }, (_, i) => i);
 
@@ -18,30 +18,18 @@ export function FloatingParticles() {
         const left = (i * 61) % 100;
         const top = (i * 47) % 100;
         return (
-          <motion.div
+          <div
             key={`bokeh-${i}`}
-            className="absolute rounded-full bg-gradient-to-br from-cyan-400/20 to-violet-500/15 blur-3xl"
+            className="absolute rounded-full bg-gradient-to-br from-cyan-400/20 to-violet-500/15 blur-3xl will-change-transform"
             style={{
               width: size,
               height: size,
               left: `${left}%`,
               top: `${top}%`,
-            }}
-            animate={
-              reduce
+              animation: reduce
                 ? undefined
-                : {
-                    y: [0, -40, 0],
-                    x: [0, 20, 0],
-                    opacity: [0.15, 0.45, 0.15],
-                    scale: [1, 1.2, 1],
-                  }
-            }
-            transition={{
-              duration: 16 + (i % 6),
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.4,
+                : `float-bokeh ${16 + (i % 6)}s ease-in-out infinite`,
+              animationDelay: reduce ? undefined : `${i * 0.4}s`,
             }}
           />
         );
@@ -56,29 +44,20 @@ export function FloatingParticles() {
         const duration = 14 + (i % 10);
         const gold = i % 7 === 0;
         return (
-          <motion.span
+          <span
             key={i}
-            className={`absolute rounded-full ${gold ? "bg-amber-200/35" : "bg-cyan-200/30"}`}
+            className={`absolute rounded-full will-change-transform ${
+              gold ? "bg-amber-200/35" : "bg-cyan-200/30"
+            }`}
             style={{
               width: size,
               height: size,
               left: `${left}%`,
               top: `${top}%`,
-            }}
-            animate={
-              reduce
+              animation: reduce
                 ? undefined
-                : {
-                    y: [0, -60, 0],
-                    opacity: [0.15, 0.8, 0.15],
-                    scale: [1, 2, 1],
-                  }
-            }
-            transition={{
-              duration,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay,
+                : `float-spark ${duration}s ease-in-out infinite`,
+              animationDelay: reduce ? undefined : `${delay}s`,
             }}
           />
         );
@@ -86,28 +65,19 @@ export function FloatingParticles() {
 
       {/* Floating rings */}
       {[0, 1, 2].map((i) => (
-        <motion.div
+        <div
           key={`ring-${i}`}
-          className="absolute rounded-full border border-white/[0.07]"
+          className="absolute rounded-full border border-white/[0.07] will-change-transform"
           style={{
             width: 400 + i * 350,
             height: 400 + i * 350,
             left: `${-10 + i * 35}%`,
             top: `${-10 + i * 15}%`,
-          }}
-          animate={
-            reduce
+            animation: reduce
               ? undefined
-              : {
-                  rotate: [0, 360],
-                  opacity: [0.08, 0.25, 0.08],
-                  scale: [1, 1.1, 1],
-                }
-          }
-          transition={{
-            rotate: { duration: 60 + i * 18, repeat: Infinity, ease: "linear" },
-            opacity: { duration: 12 + i * 3, repeat: Infinity, ease: "easeInOut" },
-            scale: { duration: 18 + i * 4, repeat: Infinity, ease: "easeInOut" },
+              : `rotate-ring ${60 + i * 18}s linear infinite, pulse-ring ${
+                  12 + i * 3
+                }s ease-in-out infinite`,
           }}
         />
       ))}

@@ -60,7 +60,7 @@ export function TechStackSection() {
           {stack.map((t) => (
             <div
               key={t.name}
-              className="tech-pill glass-panel flex min-w-[140px] flex-col items-center justify-center gap-2 rounded-2xl px-8 py-6 text-center"
+              className="tech-pill glass-panel flex min-w-[140px] flex-col items-center justify-center gap-2 rounded-2xl px-8 py-6 text-center border-white/[0.08] bg-white/[0.03]"
               style={{ perspective: "800px" }}
             >
               <span className="font-display text-2xl font-bold text-white/90">
