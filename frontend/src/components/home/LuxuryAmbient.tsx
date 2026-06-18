@@ -1,12 +1,12 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { useIsMobile } from "@/lib/useIsMobile";
 
-/**
- * Fixed atmospheric layers: mesh orbs, slow drift, vignette — no pointer tracking.
- */
 export function LuxuryAmbient() {
   const reduce = useReducedMotion();
+  const isMobile = useIsMobile();
+  const isStatic = reduce || isMobile;
 
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
@@ -14,7 +14,7 @@ export function LuxuryAmbient() {
       <div className="absolute inset-x-0 top-0 h-[55vh] bg-[radial-gradient(ellipse_90%_70%_at_50%_-10%,rgba(99,102,241,0.22),transparent)]" />
       <div className="absolute inset-x-0 bottom-0 h-[45vh] bg-[radial-gradient(ellipse_80%_60%_at_50%_120%,rgba(244,114,182,0.08),transparent)]" />
 
-      {!reduce && (
+      {!isStatic ? (
         <>
           <motion.div
             className="absolute -left-[20%] top-[10%] h-[55vh] w-[55vh] rounded-full bg-cyan-500/15 blur-[140px]"
@@ -37,9 +37,7 @@ export function LuxuryAmbient() {
             transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
           />
         </>
-      )}
-
-      {reduce && (
+      ) : (
         <>
           <div className="absolute -left-[20%] top-[10%] h-[55vh] w-[55vh] rounded-full bg-cyan-500/12 blur-[140px]" />
           <div className="absolute -right-[15%] top-[25%] h-[45vh] w-[45vh] rounded-full bg-violet-600/14 blur-[130px]" />

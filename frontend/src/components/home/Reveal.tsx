@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 type Props = {
   children: React.ReactNode;
@@ -9,14 +10,16 @@ type Props = {
 };
 
 export function Reveal({ children, className = "", delay = 0 }: Props) {
+  const isMobile = useIsMobile();
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 44 }}
+      initial={{ opacity: 0, y: isMobile ? 16 : 44 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-12% 0px" }}
+      viewport={{ once: true, margin: "-8% 0px" }}
       transition={{
-        duration: 0.9,
-        delay,
+        duration: isMobile ? 0.45 : 0.9,
+        delay: isMobile ? 0 : delay,
         ease: [0.22, 1, 0.36, 1],
       }}
       className={className}

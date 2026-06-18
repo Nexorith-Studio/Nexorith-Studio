@@ -276,4 +276,52 @@ body {
   will-change: transform, opacity;
 }
 
+/* ── Mobile performance: touch/pointer-coarse devices ───────────────────── */
+@media (hover: none) and (pointer: coarse) {
+
+  /* 1. Kill all CSS animations that don't affect layout */
+  .animate-aurora,
+  .animate-scanline,
+  .animate-float,
+  .animate-drift,
+  .border-gradient-rotate,
+  .animated-gradient-text {
+    animation: none !important;
+  }
+
+  /* 2. Remove ALL backdrop-blur — single biggest GPU/scroll win.
+        Glass panels stay readable via the opaque bg fallback below. */
+  [class*="backdrop-blur"],
+  [class*="backdrop-saturate"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 3. Slightly more opaque backgrounds to compensate for missing blur */
+  .glass-panel {
+    background-color: rgba(255, 255, 255, 0.07) !important;
+  }
+  .glass-panel-luxe {
+    background-color: rgba(255, 255, 255, 0.09) !important;
+  }
+
+  /* 4. Reduce heavy filter blur on ambient orbs */
+  .blur-\[140px\],
+  .blur-\[130px\],
+  .blur-\[120px\] {
+    filter: blur(60px) !important;
+  }
+
+  /* 5. Promote fixed bg to its own compositor layer — avoids re-paint on scroll */
+  body > * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 6. Contain fixed decorative layers so they don't trigger full-page repaints */
+  [style*="position: fixed"],
+  .fixed {
+    contain: layout style;
+  }
+}
+
 

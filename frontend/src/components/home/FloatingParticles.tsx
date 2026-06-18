@@ -1,11 +1,15 @@
 "use client";
 
 import { useReducedMotion } from "framer-motion";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const seeds = Array.from({ length: 64 }, (_, i) => i);
 
 export function FloatingParticles() {
   const reduce = useReducedMotion();
+  const isMobile = useIsMobile();
+
+  if (isMobile) return null;
 
   return (
     <div

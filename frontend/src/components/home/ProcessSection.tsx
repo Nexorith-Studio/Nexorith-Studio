@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,32 +17,36 @@ const steps = [
 export function ProcessSection() {
   const root = useRef<HTMLElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useLayoutEffect(() => {
     const line = lineRef.current;
     if (!line) return;
 
     const ctx = gsap.context(() => {
-      // Animate the laser pulse line height matching scroll progress
-      gsap.fromTo(
-        line,
-        { scaleY: 0 },
-        {
-          scaleY: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: root.current,
-            start: "top 60%",
-            end: "bottom 70%",
-            scrub: true,
-          },
-          transformOrigin: "top center",
-        }
-      );
+      if (!isMobile) {
+        gsap.fromTo(
+          line,
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: root.current,
+              start: "top 60%",
+              end: "bottom 70%",
+              scrub: true,
+            },
+            transformOrigin: "top center",
+          }
+        );
+      }
 
-      // Light up nodes and cards dynamically as they scroll into view
+      const toggleActions = isMobile
+        ? "play none none none"
+        : "play reverse play reverse";
+
       steps.forEach((_, i) => {
-        // Node pulse
         gsap.fromTo(
           `.process-node-${i}`,
           { backgroundColor: "rgba(255,255,255,0.08)", scale: 1, boxShadow: "none" },
@@ -53,12 +58,11 @@ export function ProcessSection() {
               trigger: `.process-step-${i}`,
               start: "top 65%",
               end: "bottom 55%",
-              toggleActions: "play reverse play reverse",
+              toggleActions,
             },
           }
         );
 
-        // Card border hover/focus glow
         gsap.fromTo(
           `.process-step-${i}`,
           { borderColor: "rgba(255,255,255,0.08)", boxShadow: "none" },
@@ -69,7 +73,7 @@ export function ProcessSection() {
               trigger: `.process-step-${i}`,
               start: "top 65%",
               end: "bottom 55%",
-              toggleActions: "play reverse play reverse",
+              toggleActions,
             },
           }
         );
@@ -77,7 +81,7 @@ export function ProcessSection() {
     }, root);
 
     return () => ctx.revert();
-  }, []);
+  }, [isMobile]);
 
   return (
     <section

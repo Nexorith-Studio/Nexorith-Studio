@@ -31,15 +31,17 @@ export function Navbar() {
     >
       <div className="mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between px-6 lg:px-10">
         <Link href="/" className="group flex items-center gap-3">
-          <motion.span
-            className="font-display text-xl font-bold tracking-tight text-white"
+          <motion.div
+            className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3"
             whileHover={{ scale: 1.02 }}
           >
-            Nexorith
-          </motion.span>
-          <span className="hidden rounded-full border border-white/15 bg-gradient-to-r from-white/[0.08] to-white/[0.02] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-cyan-100/90 shadow-[0_0_24px_-8px_rgba(34,211,238,0.35)] sm:inline">
-            Studio
-          </span>
+            <span className="font-display text-xl font-bold tracking-tight text-white">
+              Nexorith
+            </span>
+            <span className="rounded-full border border-white/15 bg-gradient-to-r from-white/[0.08] to-white/[0.02] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-cyan-100/90 shadow-[0_0_24px_-8px_rgba(34,211,238,0.35)]">
+              Studio
+            </span>
+          </motion.div>
         </Link>
         <nav className="hidden items-center gap-10 md:flex">
           {links.map((l) =>

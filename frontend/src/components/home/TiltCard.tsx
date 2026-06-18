@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 type Props = {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function TiltCard({ children, className = "" }: Props) {
+  const isMobile = useIsMobile();
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -29,6 +31,10 @@ export function TiltCard({ children, className = "" }: Props) {
   function onLeave() {
     x.set(0);
     y.set(0);
+  }
+
+  if (isMobile) {
+    return <div className={`relative ${className}`}>{children}</div>;
   }
 
   return (

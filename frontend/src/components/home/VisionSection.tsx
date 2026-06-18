@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,22 +16,23 @@ const lines = [
 export function VisionSection() {
   const root = useRef<HTMLElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const isMobile = useIsMobile();
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       lines.forEach((_, i) => {
         gsap.fromTo(
           `.vision-line-${i}`,
-          { opacity: 0, y: 36 },
+          { opacity: 0, y: isMobile ? 16 : 36 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.9,
+            duration: isMobile ? 0.5 : 0.9,
             ease: "power3.out",
             scrollTrigger: {
               trigger: `.vision-line-${i}`,
-              start: "top 82%",
-              toggleActions: "play none none reverse",
+              start: "top 88%",
+              toggleActions: "play none none none",
             },
           }
         );
@@ -49,24 +51,26 @@ export function VisionSection() {
             ease: "back.out(1.2)",
             scrollTrigger: {
               trigger: svgRef.current,
-              start: "top 75%",
-              toggleActions: "play none none reverse",
+              start: "top 80%",
+              toggleActions: "play none none none",
             },
           }
         );
       }
 
-      gsap.to(".orbit-ring", {
-        rotate: 360,
-        duration: 40,
-        repeat: -1,
-        ease: "none",
-        transformOrigin: "50% 50%",
-      });
+      if (!isMobile) {
+        gsap.to(".orbit-ring", {
+          rotate: 360,
+          duration: 40,
+          repeat: -1,
+          ease: "none",
+          transformOrigin: "50% 50%",
+        });
+      }
     }, root);
 
     return () => ctx.revert();
-  }, []);
+  }, [isMobile]);
 
   return (
     <section

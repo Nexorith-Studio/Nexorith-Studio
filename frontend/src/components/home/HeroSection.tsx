@@ -7,21 +7,23 @@ import { AnimatedHeading } from "./AnimatedHeading";
 import { Magnetic } from "./Magnetic";
 import { ShimmerButton } from "./ShimmerButton";
 import { TiltCard } from "./TiltCard";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 type TabType = "waveform" | "metrics" | "console";
 
 export function HeroSection() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
+  const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
-  const yOrb1 = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
-  const yOrb2 = useTransform(scrollYProgress, [0, 1], ["0%", "-18%"]);
-  const gridOpacity = useTransform(scrollYProgress, [0, 0.55], [0.45, 0.08]);
-  const headlineY = useTransform(scrollYProgress, [0, 0.45], ["0%", "-8%"]);
-  const headlineOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0.15]);
+  const yOrb1 = useTransform(scrollYProgress, [0, 1], isMobile ? ["0%", "0%"] : ["0%", "22%"]);
+  const yOrb2 = useTransform(scrollYProgress, [0, 1], isMobile ? ["0%", "0%"] : ["0%", "-18%"]);
+  const gridOpacity = useTransform(scrollYProgress, [0, 0.55], isMobile ? [0.45, 0.45] : [0.45, 0.08]);
+  const headlineY = useTransform(scrollYProgress, [0, 0.45], isMobile ? ["0%", "0%"] : ["0%", "-8%"]);
+  const headlineOpacity = useTransform(scrollYProgress, [0, 0.35], isMobile ? [1, 1] : [1, 0.15]);
 
   const [activeTab, setActiveTab] = useState<TabType>("waveform");
   const [telemetry, setTelemetry] = useState({
@@ -98,11 +100,13 @@ export function HeroSection() {
           style={{ opacity: gridOpacity }}
           className="absolute inset-0 bg-grid-fine bg-grid"
         />
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute inset-x-0 top-0 h-full animate-scanline">
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent blur-[1px] opacity-40" />
+        {!isMobile && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-full animate-scanline">
+              <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent blur-[1px] opacity-40" />
+            </div>
           </div>
-        </div>
+        )}
         <div className="noise absolute inset-0 opacity-[0.55]" />
         <FloatingParticles />
       </div>
@@ -204,7 +208,7 @@ export function HeroSection() {
             <div className="relative overflow-hidden rounded-[2rem] p-px">
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[220%] w-[220%] pointer-events-none opacity-95">
                 <div
-                  className="h-full w-full animate-[spin_36s_linear_infinite] will-change-transform"
+                  className={`h-full w-full will-change-transform ${isMobile ? "" : "animate-[spin_36s_linear_infinite]"}`}
                   style={{
                     background:
                       "conic-gradient(from 0deg, rgba(110,231,255,0.4), rgba(167,139,250,0.4), rgba(244,114,182,0.3), rgba(110,231,255,0.4))",
@@ -215,9 +219,11 @@ export function HeroSection() {
                 <div className="glass-panel-luxe relative min-h-[440px] overflow-hidden rounded-[1.95rem] flex flex-col justify-between p-7 lg:p-9">
                   {/* Cyber Laser Scanline Beam */}
                   <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+                    {!isMobile && (
                     <div className="absolute inset-x-0 top-0 h-full animate-scanline">
                       <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent blur-[1px] opacity-75" />
                     </div>
+                  )}
                   </div>
 
                   {/* Ambient internal card glow */}
