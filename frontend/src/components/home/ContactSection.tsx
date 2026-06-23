@@ -18,7 +18,6 @@ const projectTypes = [
 ];
 
 const budgets = [
-  "₹5k – ₹20k",
   "₹20k – ₹50k",
   "₹50k – ₹1L",
   "₹1L – ₹3L",
