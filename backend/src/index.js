@@ -22,6 +22,8 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://nexorith.tech",
   "https://www.nexorith.tech",
+  "https://dev.nexorith.tech",
+  FRONTEND_ORIGIN,
   /\.vercel\.app$/
 ];
 

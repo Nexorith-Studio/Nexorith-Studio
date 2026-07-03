@@ -1,0 +1,83 @@
+# Render Blueprint (Infrastructure as Code) for the Nexorith API.
+#
+# This file is a reference for provisioning the backend as code. The existing
+# production service (nexorith-api) was created manually in the Render
+# dashboard and should NOT be re-created from this blueprint, since a Blueprint
+# sync can adopt/replace services and environment variables.
+#
+# To add the dev backend, either:
+#   a) Create "nexorith-api-dev" manually in the Render dashboard (recommended,
+#      see DEVELOPMENT_WORKFLOW.md), or
+#   b) Use this file with "render blueprint launch" targeting only the dev
+#      service, reviewing the plan before applying.
+#
+# Secrets (MONGODB_URI, JWT_SECRET, ADMIN_PASSWORD_HASH, SMTP_*) are marked
+# sync: false and must be set manually in the Render dashboard for each
+# service — they are never committed to this file.
+
+services:
+  - type: web
+    name: nexorith-api
+    runtime: node
+    plan: free
+    branch: main
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_ORIGIN
+        value: https://nexorith.tech
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+
+  - type: web
+    name: nexorith-api-dev
+    runtime: node
+    plan: free
+    branch: dev
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: development
+      - key: FRONTEND_ORIGIN
+        value: https://dev.nexorith.tech
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
