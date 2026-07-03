@@ -156,3 +156,21 @@ tested `dev` code.
 
 Once steps 1–9 are done, the workflow is fully self-serve: push to `dev` to
 update `dev.nexorith.tech`, open a PR into `main` when ready to ship.
+
+---
+
+## Troubleshooting: Vercel domain shows "No Deployment"
+
+This means Vercel has never recorded a build for the branch bound to that
+domain — it's not a build failure, there's simply nothing built yet. Fix:
+
+1. Push any commit to `dev` (even a docs-only change) to force a new build.
+2. In the Vercel dashboard, go to the project's **Deployments** tab and
+   filter by branch `dev` — confirm a new deployment appears and reaches
+   **Ready**.
+3. If nothing appears within a minute of the push, check
+   **Settings → Git**: confirm the repository is connected and that no
+   branch restriction / Ignored Build Step is skipping `dev`.
+4. Also check the GitHub repo's **Settings → Webhooks** → the Vercel webhook
+   → **Recent Deliveries** for failed pushes (non-2xx responses), which
+   would explain builds never starting despite the push landing on GitHub.
