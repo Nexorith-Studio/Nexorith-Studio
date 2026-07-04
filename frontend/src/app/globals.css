@@ -10,6 +10,8 @@
   --accent-2: #a78bfa;
   --glass: rgba(255, 255, 255, 0.04);
   --glass-border: rgba(255, 255, 255, 0.08);
+  --color-foreground: #f4f4f8;
+  --color-background: #030306;
 }
 
 html {
@@ -34,6 +36,16 @@ body {
 }
 
 @layer utilities {
+  .bg-grid-fine {
+    background-size: 40px 40px;
+    background-image: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  }
+
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(
@@ -222,8 +234,24 @@ body {
   }
 }
 
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-scanline {
   animation: scanline 4s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fadeSlideIn 0.8s ease-out forwards;
+  opacity: 0;
 }
 
 @keyframes float-bokeh {
