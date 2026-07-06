@@ -1,5 +1,5 @@
-import { ClientHome } from "@/components/home/ClientHome";
+import { ClientHomeCinematic } from "@/components/home/ClientHomeCinematic";
 
 export default function Home() {
-  return <ClientHome />;
+  return <ClientHomeCinematic />;
 }
