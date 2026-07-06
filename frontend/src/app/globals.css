@@ -352,4 +352,10 @@ body {
   }
 }
 
+/* Hide Next.js dev indicator */
+#__next-build-watcher,
+nextjs-portal {
+  display: none !important;
+}
+
 

@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   ArrowRight,
   Play,
@@ -15,13 +17,17 @@ import {
   Cpu,
 } from "lucide-react";
 
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
 const CLIENTS = [
-  { name: "Acme Corp", icon: Hexagon },
-  { name: "Quantum", icon: Triangle },
-  { name: "Command+Z", icon: Command },
-  { name: "Phantom", icon: Ghost },
-  { name: "Ruby", icon: Gem },
-  { name: "Chipset", icon: Cpu },
+  { name: "React", label: "⚛" },
+  { name: "Next.js", label: "N" },
+  { name: "Node.js", label: "JS" },
+  { name: "Python", label: "Py" },
+  { name: "AI / ML", label: "🤖" },
+  { name: "Cloud", label: "☁" },
 ];
 
 const StatItem = ({ value, label }: { value: string; label: string }) => (
@@ -34,8 +40,34 @@ const StatItem = ({ value, label }: { value: string; label: string }) => (
 );
 
 export function CompleteHeroSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // No initial hidden state - content is visible immediately
+      
+      // Just pin the section for 0.8 seconds
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: "+=800", // Hold for 0.8 seconds of scroll
+          pin: true,
+          scrub: 1,
+          anticipatePin: 1,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="relative w-full bg-zinc-950 text-white overflow-hidden font-sans -mt-24">
+    <div 
+      ref={sectionRef} 
+      className="relative w-full bg-zinc-950 text-white overflow-hidden font-sans"
+      style={{ marginTop: '-100vh' }}
+    >
       {/* SCOPED ANIMATIONS */}
       <style>{`
         @keyframes fadeSlideIn {
@@ -96,7 +128,7 @@ export function CompleteHeroSection() {
           {/* --- LEFT COLUMN --- */}
           <div className="lg:col-span-7 flex flex-col justify-center space-y-8 pt-8">
             {/* Badge */}
-            <div className="animate-fade-in delay-100">
+            <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-md transition-colors hover:bg-white/10">
                 <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
                   Next-Generation Solutions{" "}
@@ -107,7 +139,7 @@ export function CompleteHeroSection() {
 
             {/* Heading */}
             <h1
-              className="animate-fade-in delay-200 text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tighter leading-[0.9]"
+              className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tighter leading-[0.9]"
               style={{
                 maskImage:
                   "linear-gradient(180deg, black 0%, black 80%, transparent 100%)",
@@ -125,21 +157,17 @@ export function CompleteHeroSection() {
             </h1>
 
             {/* Description */}
-            <p className="animate-fade-in delay-300 max-w-xl text-lg text-zinc-400 leading-relaxed">
+            <p className="max-w-xl text-lg text-zinc-400 leading-relaxed">
               Nexorith Studio crafts bold, massive, and intelligent solutions. 
               We build AI-powered applications and scalable web platforms that 
               transform industries and drive innovation.
             </p>
 
             {/* CTA Buttons */}
-            <div className="animate-fade-in delay-400 flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-semibold text-zinc-950 transition-all hover:scale-[1.02] hover:bg-zinc-200 active:scale-[0.98]">
                 Start Your Project
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </button>
-              <button className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/10 hover:border-white/20">
-                <Play className="w-4 h-4 fill-current" />
-                Explore the Vision
               </button>
             </div>
           </div>
@@ -147,7 +175,7 @@ export function CompleteHeroSection() {
           {/* --- RIGHT COLUMN --- */}
           <div className="lg:col-span-5 space-y-6 lg:mt-12">
             {/* Stats Card */}
-            <div className="animate-fade-in delay-500 relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl">
+            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl">
               {/* Card Glow Effect */}
               <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/5 blur-3xl pointer-events-none" />
 
@@ -206,9 +234,9 @@ export function CompleteHeroSection() {
             </div>
 
             {/* Marquee Card */}
-            <div className="animate-fade-in delay-500 relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 py-8 backdrop-blur-xl">
-              <h3 className="mb-6 px-8 text-sm font-medium text-zinc-400">
-                Trusted by Industry Leaders
+            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 py-8 backdrop-blur-xl">
+              <h3 className="mb-6 px-8 text-sm font-medium text-zinc-400 uppercase tracking-wider">
+                Built on proven foundations
               </h3>
               <div
                 className="relative flex overflow-hidden"
@@ -223,10 +251,14 @@ export function CompleteHeroSection() {
                   {[...CLIENTS, ...CLIENTS, ...CLIENTS].map((client, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2 opacity-50 transition-all hover:opacity-100 hover:scale-105 cursor-default grayscale hover:grayscale-0"
+                      className="flex items-center gap-3 opacity-50 transition-all hover:opacity-100 hover:scale-105 cursor-default grayscale hover:grayscale-0"
                     >
-                      <client.icon className="h-6 w-6 text-white fill-current" />
-                      <span className="text-lg font-bold text-white tracking-tight">
+                      <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                        <span className="text-2xl font-bold text-white">
+                          {client.label}
+                        </span>
+                      </div>
+                      <span className="text-base text-white font-medium tracking-tight">
                         {client.name}
                       </span>
                     </div>

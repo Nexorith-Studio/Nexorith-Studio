@@ -3,7 +3,6 @@
 import { CinematicHero } from "@/components/ui/cinematic-hero";
 import { CompleteHeroSection } from "@/components/ui/CompleteHeroSection";
 import { LuxuryAmbient } from "./LuxuryAmbient";
-import { CursorGlow } from "./CursorGlow";
 import { Navbar } from "./Navbar";
 import { VisionSection } from "./VisionSection";
 import { ServicesSection } from "./ServicesSection";
@@ -17,7 +16,6 @@ export function ClientHomeCinematic() {
   return (
     <div className="relative min-h-screen bg-[#030306]">
       <LuxuryAmbient />
-      <CursorGlow />
       <div className="relative z-10">
         <Navbar />
         <main>

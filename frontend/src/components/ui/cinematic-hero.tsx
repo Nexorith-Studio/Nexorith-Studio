@@ -330,7 +330,7 @@ export function CinematicHero({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=3500",
+          end: "+=4000",
           pin: true,
           scrub: 1,
           anticipatePin: 1,
@@ -442,22 +442,25 @@ export function CinematicHero({
           { x: 0, autoAlpha: 1, scale: 1, ease: "expo.out", duration: 1.5 },
           "<"
         )
-        .to({}, { duration: 0.8 })
+        .to({}, { duration: 2.5 })
         .to(
-          [".hero-text-wrapper", ".bg-grid-theme"],
+          [".mockup-scroll-wrapper", ".floating-badge", ".card-left-text", ".card-right-text"],
           {
             autoAlpha: 0,
-            ease: "power2.inOut",
-            duration: 0.5,
-          },
-          "-=0.3"
+            ease: "power2.in",
+            duration: 0.8,
+          }
         )
-        .to(".main-card", {
-          y: -window.innerHeight - 300,
-          autoAlpha: 0,
-          ease: "power3.in",
-          duration: 1,
-        });
+        .to(
+          ".main-card",
+          {
+            y: -window.innerHeight - 300,
+            autoAlpha: 0,
+            ease: "power3.in",
+            duration: 1.2,
+          },
+          "-=0.4"
+        );
     }, containerRef);
 
     return () => ctx.revert();
