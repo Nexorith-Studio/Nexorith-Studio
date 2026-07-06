@@ -283,7 +283,6 @@ export function CinematicHero({
 
   // 2. Complex Cinematic Scroll Timeline
   useEffect(() => {
-    const isMobile = window.innerWidth < 768;
     const ctx = gsap.context(() => {
       gsap.set(".text-track", {
         autoAlpha: 0,

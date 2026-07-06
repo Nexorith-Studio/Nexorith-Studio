@@ -5,16 +5,9 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   ArrowRight,
-  Play,
   Target,
   Crown,
   Star,
-  Hexagon,
-  Triangle,
-  Command,
-  Ghost,
-  Gem,
-  Cpu,
 } from "lucide-react";
 
 if (typeof window !== "undefined") {

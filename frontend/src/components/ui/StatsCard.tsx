@@ -1,6 +1,6 @@
 "use client";
 
-import { Target, Crown, Star } from "lucide-react";
+import { Target, Crown } from "lucide-react";
 
 const StatItem = ({ value, label }: { value: string; label: string }) => (
   <div className="flex flex-col items-center justify-center transition-transform hover:-translate-y-1 cursor-default">
