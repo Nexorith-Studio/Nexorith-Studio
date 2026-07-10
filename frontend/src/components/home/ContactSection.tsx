@@ -65,24 +65,7 @@ export function ContactSection() {
   return (
     <section id="contact" className="scroll-mt-24 px-6 py-32 lg:px-10">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-16 lg:grid-cols-2 lg:items-start">
-          <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-violet-300/90">
-              Connect
-            </p>
-            <h2 className="font-display text-4xl font-bold text-white md:text-5xl">
-              Let&apos;s architect what&apos;s next
-            </h2>
-            <p className="mt-8 max-w-md text-lg text-white/50">
-              Share a few details — our team replies within one business day with
-              next steps and a tailored proposal.
-            </p>
-            <div className="mt-12 space-y-4 text-sm text-white/40">
-              <p>New business · contact@nexorith.tech</p>
-              <p>Global · Remote-first studio</p>
-            </div>
-          </div>
-
+        <div className="flex justify-center lg:justify-end">
           <motion.form
             onSubmit={onSubmit}
             initial={{ opacity: 0, y: 24 }}

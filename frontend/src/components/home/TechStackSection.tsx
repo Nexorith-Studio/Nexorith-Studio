@@ -48,14 +48,6 @@ export function TechStackSection() {
     >
       <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
       <div className="mx-auto max-w-7xl">
-        <div className="mb-14 text-center">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-300/80">
-            Stack
-          </p>
-          <h2 className="font-display text-4xl font-bold text-white md:text-5xl">
-            Built on proven foundations
-          </h2>
-        </div>
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
           {stack.map((t) => (
             <div

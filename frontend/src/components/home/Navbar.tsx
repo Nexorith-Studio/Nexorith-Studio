@@ -8,7 +8,7 @@ const links = [
   { href: "#services", label: "Services" },
   { href: "#process", label: "Process" },
   { href: "/status", label: "Status", isExternal: true },
-  { href: "#contact", label: "Contact" },
+  { href: "/contact", label: "Contact", isExternal: true },
 ];
 
 export function Navbar() {
@@ -58,7 +58,7 @@ export function Navbar() {
         </nav>
         <div className="flex items-center gap-3">
           <motion.a
-            href="#contact"
+            href="/contact"
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.98 }}
             className="group relative overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-cyan-200 to-violet-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_0_0_1px_rgba(255,255,255,0.2)_inset,0_12px_40px_-16px_rgba(34,211,238,0.55)]"
