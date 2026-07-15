@@ -16,12 +16,13 @@ export default {
       },
       fontFamily: {
         display: ["var(--font-syne)", "system-ui", "sans-serif"],
-        sans: ["var(--font-dm)", "system-ui", "sans-serif"],
+        sans: ["Inter", "var(--font-dm)", "system-ui", "sans-serif"],
         zentry: ["zentry", "sans-serif"],
         general: ["general", "sans-serif"],
         "circular-web": ["circular-web", "sans-serif"],
         "robert-regular": ["robert-regular", "sans-serif"],
         "robert-medium": ["robert-medium", "sans-serif"],
+        serif: ["Fraunces", "Playfair Display", "serif"],
       },
       backgroundImage: {
         "grid-fine":

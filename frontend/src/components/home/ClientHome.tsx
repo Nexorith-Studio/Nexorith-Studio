@@ -9,7 +9,6 @@ import { ServicesSection } from "./ServicesSection";
 import { TechStackSection } from "./TechStackSection";
 import { ProcessSection } from "./ProcessSection";
 import { StatusSection } from "./StatusSection";
-import { ContactSection } from "./ContactSection";
 import { Footer } from "./Footer";
 
 export function ClientHome() {
@@ -26,7 +25,6 @@ export function ClientHome() {
           <TechStackSection />
           <ProcessSection />
           <StatusSection />
-          <ContactSection />
         </main>
         <Footer />
       </div>

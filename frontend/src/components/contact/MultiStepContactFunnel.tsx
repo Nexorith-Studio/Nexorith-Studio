@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { gsap } from "gsap";
 import { TextEffect } from "@/components/ui/text-effect";
 import { AnimatedFeatureCard } from "@/components/ui/animated-feature-card";
+import { LightReviewStep } from "./LightReviewStep";
+import { cn } from "@/lib/utils";
 import {
   Rocket,
   TrendingUp,
@@ -17,9 +20,7 @@ import {
   Target,
   TrendingUpIcon,
   Heart,
-  ArrowRight,
   ArrowLeft,
-  Check,
   Calendar,
   Clock,
   Search,
@@ -179,7 +180,6 @@ interface FormData {
 
 export function MultiStepContactFunnel() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [direction, setDirection] = useState(1);
   const [userSelections, setUserSelections] = useState<UserSelections>({});
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
@@ -189,14 +189,226 @@ export function MultiStepContactFunnel() {
     details: "",
   });
   const [isClient, setIsClient] = useState(false);
+  const [animating, setAnimating] = useState(false);
+  const [collectedCards, setCollectedCards] = useState<Array<{step: number; label: string}>>([]);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const planeRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
-  // Ensure we're on the client side
-  React.useEffect(() => {
+  // Zigzag flight animation
+  const animatePlaneJourney = () => {
+    const plane = planeRef.current;
+    const overlay = overlayRef.current;
+    
+    if (!plane || !overlay) {
+      console.log('Missing plane or overlay, going to review');
+      setCurrentStep(5);
+      return;
+    }
+    
+    console.log('Starting plane journey');
+    
+    // Show overlay
+    gsap.set(overlay, { display: 'block', opacity: 0, backgroundColor: 'rgba(244, 241, 234, 0)' });
+    gsap.to(overlay, { opacity: 1, backgroundColor: 'rgba(244, 241, 234, 0.95)', duration: 0.5 });
+    
+    const screenHeight = window.innerHeight;
+    const screenWidth = window.innerWidth;
+    
+    // Start position - top right
+    gsap.set(plane, {
+      x: screenWidth - 100,
+      y: 50,
+      rotation: -20,
+      scale: 1,
+      opacity: 1,
+    });
+    
+    // Zigzag waypoints
+    const waypoints = [
+      { x: screenWidth * 0.75, y: screenHeight * 0.2, rotation: -15 },
+      { x: screenWidth * 0.25, y: screenHeight * 0.4, rotation: 15 },
+      { x: screenWidth * 0.65, y: screenHeight * 0.6, rotation: -10 },
+      { x: screenWidth * 0.35, y: screenHeight * 0.8, rotation: 20 },
+      { x: screenWidth * 0.5, y: screenHeight * 1.2, rotation: 0, scale: 2 },
+    ];
+    
+    const tl = gsap.timeline({
+      onComplete: () => {
+        console.log('Journey complete');
+        // Unfold on review page
+        setTimeout(() => {
+          setCurrentStep(5);
+          unfoldReviewPage();
+        }, 100);
+      }
+    });
+    
+    waypoints.forEach((point, idx) => {
+      tl.to(plane, {
+        x: point.x,
+        y: point.y,
+        rotation: point.rotation,
+        scale: point.scale || 1,
+        duration: 1.0,
+        ease: idx === waypoints.length - 1 ? "power2.in" : "power1.inOut",
+      });
+    });
+  };
+  
+  // Unfold animation
+  const unfoldReviewPage = () => {
+    const overlay = overlayRef.current;
+    const plane = planeRef.current;
+    
+    if (!overlay) return;
+    
+    gsap.to(overlay, {
+      opacity: 0,
+      duration: 0.6,
+      delay: 0.3,
+      onComplete: () => {
+        gsap.set(overlay, { display: 'none' });
+        if (plane) gsap.set(plane, { opacity: 0 });
+      }
+    });
+  };
+
+  // Card fold animation
+  const animateCardFold = (cardEl: HTMLElement, optionData: any) => {
+    if (animating) return;
+    
+    console.log('Folding card:', optionData.label);
+    setAnimating(true);
+    
+    const plane = planeRef.current;
+    const allCards = cardsRef.current?.querySelectorAll('.animated-card') || [];
+    const otherCards = Array.from(allCards).filter(c => c !== cardEl);
+    
+    if (!plane) {
+      // Fallback - just go to next step
+      console.log('No plane, using fallback');
+      setTimeout(() => {
+        if (currentStep === 4) {
+          setCurrentStep(5);
+        } else {
+          setCurrentStep(prev => prev + 1);
+        }
+        setAnimating(false);
+      }, 600);
+      return;
+    }
+    
+    const cardRect = cardEl.getBoundingClientRect();
+    const planeX = window.innerWidth - 100;
+    const planeY = 50;
+    
+    // Show plane
+    gsap.set(plane, {
+      x: planeX,
+      y: planeY,
+      rotation: -20,
+      scale: 0.8,
+      opacity: 1,
+    });
+    
+    const tl = gsap.timeline({
+      onComplete: () => {
+        setCollectedCards(prev => [...prev, { step: currentStep, label: optionData.label }]);
+        
+        if (currentStep === 4) {
+          // Start journey after final card
+          setTimeout(() => animatePlaneJourney(), 300);
+        } else {
+          setCurrentStep(prev => prev + 1);
+        }
+        
+        setAnimating(false);
+      }
+    });
+    
+    // Fade other cards
+    if (otherCards.length) {
+      tl.to(otherCards, {
+        opacity: 0,
+        scale: 0.9,
+        duration: 0.4,
+        stagger: 0.03,
+      }, 0);
+    }
+    
+    // Fold and fly selected card
+    tl.to(cardEl, {
+      x: planeX - (cardRect.left + cardRect.width / 2),
+      y: planeY - (cardRect.top + cardRect.height / 2),
+      scale: 0.1,
+      rotation: 720,
+      rotateY: 180,
+      duration: 1.2,
+      ease: "power2.inOut",
+    }, 0.2)
+    .to(cardEl, {
+      opacity: 0,
+      duration: 0.2,
+    }, "-=0.2")
+    
+    // Plane wobble
+    .to(plane, {
+      scale: 0.95,
+      rotation: -30,
+      duration: 0.15,
+    }, "-=0.2")
+    .to(plane, {
+      scale: 0.8,
+      rotation: -20,
+      duration: 0.15,
+    });
+  };
+
+  // Card entrance animation
+  useEffect(() => {
+    if (currentStep === 5 || typeof window === "undefined") return;
+    
+    const ctx = gsap.context(() => {
+      const container = cardsRef.current;
+      if (!container) return;
+
+      const cards = Array.from(container.querySelectorAll(".animated-card"));
+      if (!cards.length) return;
+
+      gsap.fromTo(cards, 
+        { opacity: 0, scale: 0.8, y: 40 },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "back.out(1.7)",
+          stagger: 0.08,
+        }
+      );
+
+      if (headingRef.current) {
+        gsap.fromTo(headingRef.current,
+          { opacity: 0, y: -20 },
+          { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+        );
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [currentStep]);
+
+  // Client-side check
+  useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Load saved state from sessionStorage on mount (client-side only)
-  React.useEffect(() => {
+  // Save/load state
+  useEffect(() => {
     if (!isClient || typeof window === 'undefined') return;
     
     try {
@@ -204,24 +416,16 @@ export function MultiStepContactFunnel() {
       const savedSelections = sessionStorage.getItem('nexorith_contact_selections');
       const savedFormData = sessionStorage.getItem('nexorith_contact_formdata');
       
-      if (savedStep) {
-        const step = parseInt(savedStep, 10);
-        if (step >= 1 && step <= 5) setCurrentStep(step);
-      }
-      if (savedSelections) {
-        setUserSelections(JSON.parse(savedSelections));
-      }
-      if (savedFormData) {
-        setFormData(JSON.parse(savedFormData));
-      }
+      if (savedStep) setCurrentStep(parseInt(savedStep, 10));
+      if (savedSelections) setUserSelections(JSON.parse(savedSelections));
+      if (savedFormData) setFormData(JSON.parse(savedFormData));
     } catch (error) {
-      console.error('Error loading saved state:', error);
+      console.error('Error loading state:', error);
     }
   }, [isClient]);
 
-  // Save state to sessionStorage whenever it changes (client-side only)
-  React.useEffect(() => {
-    if (!isClient || typeof window === 'undefined') return;
+  useEffect(() => {
+    if (!isClient) return;
     
     try {
       sessionStorage.setItem('nexorith_contact_step', currentStep.toString());
@@ -232,416 +436,188 @@ export function MultiStepContactFunnel() {
     }
   }, [currentStep, userSelections, formData, isClient]);
 
-  const handleCardClick = (stepNumber: number, optionId: string, optionLabel: string) => {
+  const handleCardClick = (optionId: string, optionLabel: string, optionData: any, e: React.MouseEvent) => {
+    if (animating) return;
+    
+    const cardEl = e.currentTarget as HTMLElement;
+    
     setUserSelections((prev) => ({
       ...prev,
-      [`step${stepNumber}`]: optionLabel,
+      [`step${currentStep}`]: optionLabel,
     }));
 
-    // Wait 800ms for visual feedback, then advance
-    setTimeout(() => {
-      setDirection(1);
-      setCurrentStep((prev) => prev + 1);
-    }, 800);
+    animateCardFold(cardEl, optionData);
   };
 
   const goBack = () => {
-    setDirection(-1);
-    setCurrentStep((prev) => prev - 1);
+    if (animating || currentStep === 1) return;
+    
+    if (currentStep === 5) {
+      setCurrentStep(4);
+      setCollectedCards([]);
+    } else {
+      setCurrentStep(prev => prev - 1);
+      setCollectedCards(prev => prev.slice(0, -1));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({
-      selections: userSelections,
-      formData,
-    });
-    alert("Form submitted! (Connect to your backend API)");
+    console.log({ selections: userSelections, formData });
+    alert("Form submitted!");
   };
 
   const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-    }),
+    enter: { x: 1000, opacity: 0 },
+    center: { x: 0, opacity: 1 },
+    exit: { x: -1000, opacity: 0 },
   };
 
   return (
-    <div className="relative min-h-screen bg-black py-20 px-4">
-      {/* Ambient glow effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-white/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-white/5 rounded-full blur-[120px]" />
-      </div>
+    <>
+      {currentStep === 5 ? (
+        <LightReviewStep
+          userSelections={userSelections}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleSubmit}
+          onBack={goBack}
+        />
+      ) : (
+        <div ref={containerRef} className="relative min-h-screen bg-[#f4f1ea] py-16 px-4">
+          {/* Grain Overlay */}
+          <div 
+            className="fixed inset-0 pointer-events-none z-[1] opacity-[0.12] mix-blend-multiply"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'repeat',
+              backgroundSize: '128px 128px'
+            }}
+          />
 
-      <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Progress Indicator */}
-        <div className="mb-16">
-          <div className="flex items-center justify-center gap-2 sm:gap-4">
-            {[1, 2, 3, 4, 5].map((step, idx) => (
-              <React.Fragment key={step}>
-                <div className="flex flex-col items-center">
-                  <motion.div
-                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-semibold text-sm sm:text-base transition-all duration-300 ${
-                      step < currentStep
-                        ? "bg-white text-black shadow-lg shadow-white/30"
-                        : step === currentStep
-                        ? "bg-white/20 text-white ring-2 ring-white shadow-lg shadow-white/20"
-                        : "bg-zinc-800/50 text-zinc-600"
-                    }`}
-                    animate={
-                      step === currentStep
-                        ? { scale: [1, 1.1, 1] }
-                        : { scale: 1 }
-                    }
-                    transition={{ duration: 0.5 }}
-                  >
-                    {step < currentStep ? <Check className="w-5 h-5" /> : step}
-                  </motion.div>
-                  <span className="mt-2 text-xs text-zinc-500 hidden sm:block">
-                    {step === 5 ? "Review" : `Step ${step}`}
-                  </span>
-                </div>
-                {idx < 4 && (
-                  <div
-                    className={`h-[2px] w-12 sm:w-20 border-t-2 border-dashed transition-colors duration-300 ${
-                      step < currentStep ? "border-white" : "border-zinc-700"
-                    }`}
-                  />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="relative min-h-[500px]">
-          <AnimatePresence mode="wait" custom={direction}>
-            {currentStep <= 4 ? (
-              <motion.div
-                key={currentStep}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 200, damping: 25 },
-                  opacity: { duration: 0.4 },
-                }}
-              >
-                <SelectionStep
-                  stepData={STEPS_DATA[currentStep - 1]}
-                  onSelect={(optionId, optionLabel) =>
-                    handleCardClick(currentStep, optionId, optionLabel)
-                  }
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                key={5}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 200, damping: 25 },
-                  opacity: { duration: 0.4 },
-                }}
-              >
-                <FinalStep
-                  userSelections={userSelections}
-                  formData={formData}
-                  setFormData={setFormData}
-                  onSubmit={handleSubmit}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Back Button */}
-        {currentStep > 1 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-12 flex justify-center"
+          {/* Paper Plane */}
+          <div
+            ref={planeRef}
+            className="fixed pointer-events-none z-[100] opacity-0"
+            style={{ transformOrigin: "50% 50%" }}
           >
-            <button
-              onClick={goBack}
-              className="group flex items-center gap-2 px-6 py-3 rounded-full border border-zinc-700 bg-zinc-900/50 text-zinc-300 hover:bg-zinc-900 hover:border-white hover:text-white transition-all duration-300"
-            >
-              <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              Back
-            </button>
-          </motion.div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Selection Step Component (Steps 1-4)
-function SelectionStep({
-  stepData,
-  onSelect,
-}: {
-  stepData: (typeof STEPS_DATA)[0];
-  onSelect: (id: string, label: string) => void;
-  selectedValue?: string;
-}) {
-  const [clickedCard, setClickedCard] = useState<string | null>(null);
-
-  const handleClick = (optionId: string, optionLabel: string) => {
-    setClickedCard(optionId);
-    onSelect(optionId, optionLabel);
-  };
-
-  return (
-    <div className="text-center">
-      <TextEffect
-        per="word"
-        preset="blur"
-        delay={0.2}
-        className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-12 sm:mb-16"
-      >
-        {stepData.question}
-      </TextEffect>
-
-      <div className="group grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {stepData.options.map((option, idx) => {
-          const isSelected = clickedCard === option.id;
-
-          return (
-            <motion.div
-              key={option.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 + 0.8 }}
-              onClick={() => handleClick(option.id, option.label)}
-              className="cursor-pointer"
-            >
-              <AnimatedFeatureCard
-                index={`00${idx + 1}`}
-                tag={option.id.toUpperCase()}
-                title={option.label}
-                imageSrc={option.imageSrc}
-                color={option.color}
-                className={`h-[320px] sm:h-[380px] ${
-                  isSelected
-                    ? "!border-white !shadow-lg !shadow-white/30 !scale-105"
-                    : ""
-                }`}
+            <svg width="80" height="80" viewBox="0 0 68 68" fill="none">
+              <path
+                d="M2 34L66 2L50 34L66 66L2 34Z"
+                fill="#1f2937"
+                stroke="#374151"
+                strokeWidth="2"
+                strokeLinejoin="round"
+                fillOpacity="0.95"
               />
-              {/* Checkmark Badge for selected state */}
-              {isSelected && (
+              <path
+                d="M2 34L50 34"
+                stroke="#374151"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+            
+            {/* Cargo counter */}
+            {collectedCards.length > 0 && (
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold text-black shadow-lg">
+                {collectedCards.length}
+              </div>
+            )}
+          </div>
+
+          {/* Overlay for journey */}
+          <div
+            ref={overlayRef}
+            className="fixed inset-0 z-[99] pointer-events-none hidden"
+          />
+
+          {/* Ambient effects */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+            <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-gray-300/30 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-gray-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+          </div>
+
+          <div className="relative z-10 max-w-7xl mx-auto">
+            <AnimatePresence mode="wait">
+              {currentStep <= 4 && (
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute top-3 right-3 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-lg shadow-white/30 z-30"
+                  key={currentStep}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: "spring", stiffness: 150, damping: 20 },
+                    opacity: { duration: 0.3 },
+                  }}
                 >
-                  <Check className="w-4 h-4 text-black" />
+                  <div ref={headingRef} className="mb-16">
+                    <TextEffect
+                      per="word"
+                      preset="blur"
+                      delay={0.1}
+                      className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-black text-center leading-tight px-4"
+                    >
+                      {STEPS_DATA[currentStep - 1].question}
+                    </TextEffect>
+                  </div>
+
+                  <div 
+                    ref={cardsRef}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4"
+                  >
+                    {STEPS_DATA[currentStep - 1].options.map((option, idx) => (
+                      <motion.div
+                        key={option.id}
+                        onClick={(e) => handleCardClick(option.id, option.label, option, e)}
+                        className="cursor-pointer animated-card"
+                        whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <AnimatedFeatureCard
+                          index={`00${idx + 1}`}
+                          tag={option.id.toUpperCase()}
+                          title={option.label}
+                          imageSrc={option.imageSrc}
+                          color={option.color}
+                          className={cn(
+                            "h-[300px] sm:h-[340px]",
+                            "!bg-white !border-gray-200/60 !shadow-lg",
+                            "[&_.card-index]:!text-gray-400",
+                            "[&_.card-tag]:!text-gray-600",
+                            "[&_.card-title]:!text-black",
+                            "[&_.card-content]:!bg-white/95 [&_.card-content]:!border-gray-200",
+                            "hover:!border-gray-400 hover:!shadow-2xl"
+                          )}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
                 </motion.div>
               )}
-            </motion.div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
+            </AnimatePresence>
 
-// Final Step Component (Step 5)
-function FinalStep({
-  userSelections,
-  formData,
-  setFormData,
-  onSubmit,
-}: {
-  userSelections: UserSelections;
-  formData: FormData;
-  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
-  onSubmit: (e: React.FormEvent) => void;
-}) {
-  const selectionLabels = [
-    { key: "step1", label: "Business Type" },
-    { key: "step2", label: "Project Focus" },
-    { key: "step3", label: "Primary Goal" },
-    { key: "step4", label: "Timeline" },
-  ];
-
-  return (
-    <div>
-      <TextEffect
-        per="word"
-        preset="blur"
-        className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white text-center mb-4"
-      >
-        Great. We&apos;ve got the context.
-      </TextEffect>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="text-xl text-zinc-400 text-center mb-12"
-      >
-        Now let&apos;s connect.
-      </motion.p>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column: Summary */}
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-6"
-        >
-          {/* Selected Options Card */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-zinc-950/50 border border-zinc-700">
-            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Check className="w-5 h-5 text-white" />
-              Your Selected Options
-            </h3>
-            <div className="space-y-4">
-              {selectionLabels.map((item) => (
-                <div key={item.key} className="flex justify-between items-center py-2 border-b border-zinc-700/50">
-                  <span className="text-zinc-400 text-sm">{item.label}</span>
-                  <span className="text-white font-medium">
-                    {userSelections[item.key] || "—"}
-                  </span>
-                </div>
-              ))}
-            </div>
+            {/* Back Button */}
+            {currentStep > 1 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-12 flex justify-center"
+              >
+                <button
+                  onClick={goBack}
+                  disabled={animating}
+                  className="flex items-center gap-2 px-8 py-3 rounded-full border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-black hover:text-black transition-all duration-300 shadow-lg font-sans font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back
+                </button>
+              </motion.div>
+            )}
           </div>
-
-          {/* What Happens Next */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20">
-            <h3 className="text-xl font-semibold text-white mb-4">
-              What happens next
-            </h3>
-            <ul className="space-y-3">
-              {[
-                "We'll review your requirements within 24 hours",
-                "Schedule a discovery call at your convenience",
-                "Receive a tailored proposal and timeline",
-                "Start building your solution together",
-              ].map((item, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-zinc-300">
-                  <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Check className="w-3 h-3 text-green-400" />
-                  </div>
-                  <span className="text-sm">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </motion.div>
-
-        {/* Right Column: Form */}
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <form onSubmit={onSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Full Name *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.fullName}
-                onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300"
-                placeholder="John Doe"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Work Email *
-              </label>
-              <input
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300"
-                placeholder="john@company.com"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Phone Number *
-              </label>
-              <input
-                type="tel"
-                required
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300"
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Company Name *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.company}
-                onChange={(e) =>
-                  setFormData({ ...formData, company: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300"
-                placeholder="Acme Inc."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Additional Details
-              </label>
-              <textarea
-                rows={4}
-                value={formData.details}
-                onChange={(e) =>
-                  setFormData({ ...formData, details: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 resize-none"
-                placeholder="Tell us more about your project..."
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="group w-full py-4 px-6 rounded-xl bg-white text-black font-semibold text-lg flex items-center justify-center gap-2 hover:bg-zinc-100 transition-all duration-300 shadow-lg shadow-white/30 hover:shadow-white/50 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Submit & Connect
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-            </button>
-          </form>
-        </motion.div>
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 }

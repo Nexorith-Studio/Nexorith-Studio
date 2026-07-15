@@ -58,7 +58,6 @@ export function ClientHomeCinematic() {
           <TechStackSection />
           <ProcessSection />
           <StatusSection />
-          {/* <ContactSection /> */}
         </main>
         <Footer />
       </div>

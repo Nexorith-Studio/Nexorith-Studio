@@ -1,18 +1,11 @@
-"use client";
+import { ContactFormNew } from "@/components/contact/ContactFormNew";
 
-import React from "react";
-import { MultiStepContactFunnel } from "@/components/contact/MultiStepContactFunnel";
-import { Navbar } from "@/components/home/Navbar";
-import { Footer } from "@/components/home/Footer";
+export const metadata = {
+  title: "Contact - Nexorith Studio",
+  description:
+    "Get in touch with Nexorith Studio. Tell us about your project and let's build something great together.",
+};
 
 export default function ContactPage() {
-  return (
-    <div className="relative min-h-screen bg-black">
-      <div className="relative z-10">
-        <Navbar />
-        <MultiStepContactFunnel />
-        <Footer />
-      </div>
-    </div>
-  );
+  return <ContactFormNew />;
 }
