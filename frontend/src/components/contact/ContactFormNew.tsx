@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { TextReveal } from "@/components/ui/TextReveal";
@@ -110,6 +110,33 @@ export function ContactFormNew() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("contactFormState");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.selectedServices) setSelectedServices(parsed.selectedServices);
+        if (parsed.selectedBudget) setSelectedBudget(parsed.selectedBudget);
+        if (parsed.name) setName(parsed.name);
+        if (parsed.email) setEmail(parsed.email);
+        if (parsed.project) setProject(parsed.project);
+      } catch (e) {
+        console.error("Failed to parse saved form state", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const stateToSave = {
+      selectedServices,
+      selectedBudget,
+      name,
+      email,
+      project,
+    };
+    localStorage.setItem("contactFormState", JSON.stringify(stateToSave));
+  }, [selectedServices, selectedBudget, name, email, project]);
+
   const toggleService = (service: string) => {
     setSelectedServices((prev) =>
       prev.includes(service)
@@ -142,6 +169,12 @@ export function ContactFormNew() {
         budgetRange: selectedBudget,
         message: project || "Inquiry from new contact form",
       });
+      localStorage.removeItem("contactFormState");
+      setSelectedServices([]);
+      setSelectedBudget("");
+      setName("");
+      setEmail("");
+      setProject("");
       setSubmitted(true);
     } catch (err) {
       console.error(err);
