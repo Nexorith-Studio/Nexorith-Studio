@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -354,7 +355,7 @@ export default function StatusPage() {
             {/* Content overlay */}
             <div className="relative z-10 w-full max-w-2xl px-xl py-xl md:py-24 flex flex-col justify-center text-left">
               <h1 className="font-headline-display text-5xl md:text-7xl mb-lg text-white leading-[1.1] font-bold tracking-tighter drop-shadow-lg">
-                Let's grow your<br/>brand together!
+                Let&apos;s grow your<br/>brand together!
               </h1>
               <div>
                 <button 
@@ -374,7 +375,7 @@ export default function StatusPage() {
             <div className="space-y-md">
               <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">Commitment to Quality</h2>
               <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                At Nexorith, we believe that robust engineering is the foundation of every successful enterprise. Our systems are designed with fault tolerance, high availability, and scalability at their core. We don't just build software; we architect resilient solutions that adapt to your evolving business needs.
+                At Nexorith, we believe that robust engineering is the foundation of every successful enterprise. Our systems are designed with fault tolerance, high availability, and scalability at their core. We don&apos;t just build software; we architect resilient solutions that adapt to your evolving business needs.
               </p>
               <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
                 Our dedicated teams of architects and engineers work tirelessly to ensure that our infrastructure meets the highest standards of performance and security, providing you with the peace of mind to focus on what matters most—growing your business.
