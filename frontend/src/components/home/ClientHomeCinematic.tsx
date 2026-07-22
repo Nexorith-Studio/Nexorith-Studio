@@ -1,7 +1,11 @@
 "use client";
 
 import { CinematicHero } from "@/components/ui/cinematic-hero";
-import { CompleteHeroSection } from "@/components/ui/CompleteHeroSection";
+import ZentryHero from "@/components/ui/ZentryHero";
+import ZentryAbout from "@/components/ui/ZentryAbout";
+import ZentryFeatures from "@/components/ui/ZentryFeatures";
+import ZentryStory from "@/components/ui/ZentryStory";
+import ZentryContact from "@/components/ui/ZentryContact";
 import { LuxuryAmbient } from "./LuxuryAmbient";
 import { Navbar } from "./Navbar";
 import { VisionSection } from "./VisionSection";
@@ -9,7 +13,6 @@ import { ServicesSection } from "./ServicesSection";
 import { TechStackSection } from "./TechStackSection";
 import { ProcessSection } from "./ProcessSection";
 import { StatusSection } from "./StatusSection";
-import { ContactSection } from "./ContactSection";
 import { Footer } from "./Footer";
 
 export function ClientHomeCinematic() {
@@ -35,15 +38,26 @@ export function ClientHomeCinematic() {
             metricLabel="Projects Delivered"
           />
           
-          {/* Complete Hero Section with Left Content + Stats + Marquee */}
-          <CompleteHeroSection />
+          {/* Zentry Hero Section */}
+          <ZentryHero />
+          
+          {/* Zentry About Section */}
+          <ZentryAbout />
+          
+          {/* Zentry Features Section */}
+          <ZentryFeatures />
+          
+          {/* Zentry Story Section */}
+          <ZentryStory />
+          
+          {/* Zentry Contact Section */}
+          <ZentryContact />
 
           <VisionSection />
           <ServicesSection />
           <TechStackSection />
           <ProcessSection />
           <StatusSection />
-          <ContactSection />
         </main>
         <Footer />
       </div>
