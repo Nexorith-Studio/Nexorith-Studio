@@ -86,6 +86,8 @@ type ProjectActivity = {
 type ProjectResource = {
   title: string;
   href: string;
+  type: 'document' | 'figma' | 'pdf' | 'link' | 'other';
+  isDownloadable?: boolean;
 };
 
 type ProjectData = {
@@ -160,9 +162,10 @@ const MOCK_PROJECT_DB: Record<string, ProjectData> = {
       }
     ],
     resources: [
-      { title: "Project PRD", href: "#" },
-      { title: "Figma Design", href: "#" },
-      { title: "API Documentation", href: "#" }
+      { title: "Project PRD", href: "/example-prd.pdf", type: "document", isDownloadable: true },
+      { title: "Figma Design", href: "https://figma.com", type: "figma", isDownloadable: false },
+      { title: "API Documentation", href: "/api-docs.pdf", type: "pdf", isDownloadable: true },
+      { title: "Brand Assets", href: "/brand-assets.zip", type: "other", isDownloadable: true }
     ],
     activity: [
       { date: "July 17, 2024 - 10:30 AM", description: "Initial UI Shell deployed to staging environment for preliminary review." },
@@ -866,19 +869,32 @@ export default function StatusPage() {
                         <h2 className="text-xl font-bold text-gray-900 mb-5">Resources</h2>
                         <div className="bg-[#F8F9FA] rounded-lg border border-gray-100 p-3 space-y-1">
                           {activeProject.resources.map((r, i) => (
-                            <a key={i} className="flex items-center px-3 py-2.5 rounded hover:bg-gray-100 transition-colors group" href={r.href}>
+                            <a 
+                              key={i} 
+                              className="flex items-center px-3 py-2.5 rounded hover:bg-gray-100 transition-colors group" 
+                              href={r.href}
+                              target={r.isDownloadable ? "_self" : "_blank"}
+                              rel={r.isDownloadable ? "" : "noopener noreferrer"}
+                              download={r.isDownloadable}
+                            >
                               <svg className="w-5 h-5 text-gray-500 mr-3 group-hover:text-gray-700" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                                {i === 0 && <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeLinecap="round" strokeLinejoin="round"></path>}
-                                {i === 1 && (
+                                {r.type === 'document' && <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeLinecap="round" strokeLinejoin="round"></path>}
+                                {r.type === 'figma' && (
                                   <>
                                     <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" strokeLinecap="round" strokeLinejoin="round"></path>
                                     <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round"></path>
                                   </>
                                 )}
-                                {i === 2 && <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" strokeLinecap="round" strokeLinejoin="round"></path>}
-                                {i > 2 && <circle cx="12" cy="12" r="10" />}
+                                {r.type === 'pdf' && <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" strokeLinecap="round" strokeLinejoin="round"></path>}
+                                {r.type === 'link' && <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" strokeLinecap="round" strokeLinejoin="round"></path>}
+                                {r.type === 'other' && <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeLinecap="round" strokeLinejoin="round"></path>}
                               </svg>
                               <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">{r.title}</span>
+                              {r.isDownloadable && (
+                                <svg className="w-4 h-4 text-gray-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeLinecap="round" strokeLinejoin="round"></path>
+                                </svg>
+                              )}
                             </a>
                           ))}
                         </div>
