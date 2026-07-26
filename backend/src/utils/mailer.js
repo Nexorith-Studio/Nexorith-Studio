@@ -155,4 +155,60 @@ async function sendStatusUpdate({ name, email, trackingId, projectStatus, projec
   console.log(`[mailer] Status update sent to ${email} (${trackingId}): ${projectStatus}`);
 }
 
-module.exports = { sendInquiryConfirmation, sendStatusUpdate };
+/**
+ * Send full lead details to the admin securely.
+ */
+async function sendAdminNotification(leadData) {
+  const adminEmail = process.env.ADMIN_EMAIL;
+
+  if (!adminEmail) {
+    console.warn("[mailer] ADMIN_EMAIL is not set. Skipping admin notification.");
+    return;
+  }
+
+  // Security: Escape HTML to prevent XSS injection in the email body
+  const escapeHTML = (str) => {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
+  const safeName = escapeHTML(leadData.name);
+  const safeEmail = escapeHTML(leadData.email);
+  const safePhone = escapeHTML(leadData.phone || "Not provided");
+  const safeProjectType = escapeHTML(leadData.projectType);
+  const safeBudgetRange = escapeHTML(leadData.budgetRange);
+  // Escape the message, then replace newlines with <br> tags for readability
+  const safeMessage = escapeHTML(leadData.message).replace(/\n/g, '<br>');
+  const safeTrackingId = escapeHTML(leadData.trackingId);
+
+  const html = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333; background-color: #ffffff; padding: 24px; border-radius: 8px;">
+      <h2 style="color: #0a0a10; border-bottom: 2px solid #eee; padding-bottom: 8px;">New Project Inquiry</h2>
+      <table style="width: 100%; text-align: left; border-collapse: collapse; margin-bottom: 24px;">
+        <tr><th style="padding: 8px 0; border-bottom: 1px solid #eee;">Tracking ID</th><td style="padding: 8px 0; border-bottom: 1px solid #eee; font-family: monospace; font-weight: bold;">${safeTrackingId}</td></tr>
+        <tr><th style="padding: 8px 0; border-bottom: 1px solid #eee;">Name</th><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${safeName}</td></tr>
+        <tr><th style="padding: 8px 0; border-bottom: 1px solid #eee;">Email</th><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><a href="mailto:${safeEmail}" style="color: #2563eb;">${safeEmail}</a></td></tr>
+        <tr><th style="padding: 8px 0; border-bottom: 1px solid #eee;">Phone</th><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${safePhone}</td></tr>
+        <tr><th style="padding: 8px 0; border-bottom: 1px solid #eee;">Project Type</th><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${safeProjectType}</td></tr>
+        <tr><th style="padding: 8px 0; border-bottom: 1px solid #eee;">Budget</th><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${safeBudgetRange}</td></tr>
+      </table>
+      <h3 style="margin-bottom: 8px;">Message from client:</h3>
+      <div style="background: #f9fafb; padding: 16px; border-radius: 8px; font-style: italic; border: 1px solid #eee;">
+        ${safeMessage}
+      </div>
+    </div>
+  `;
+
+  await sendEmail({
+    to: adminEmail,
+    subject: `🔥 New Lead: ${safeProjectType} from ${safeName}`,
+    html,
+  });
+}
+
+module.exports = { sendInquiryConfirmation, sendStatusUpdate, sendAdminNotification };
