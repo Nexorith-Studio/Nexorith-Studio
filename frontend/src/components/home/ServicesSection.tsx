@@ -227,7 +227,12 @@ export function ServicesSection() {
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
           {services.map((s) => (
-            <motion.div key={s.title} variants={item} className={s.colSpanClass}>
+            <motion.div 
+              key={s.title} 
+              variants={item} 
+              className={s.colSpanClass}
+              style={{ willChange: "transform, opacity" }}
+            >
               <TiltCard className="h-full">
                 <div className="group glass-panel-luxe relative h-full overflow-hidden rounded-3xl p-8 transition-shadow duration-500 hover:shadow-[0_0_80px_-20px_rgba(110,231,255,0.45)] border-white/[0.08] bg-white/[0.03]">
                   <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100 pointer-events-none" />

@@ -208,11 +208,11 @@ body {
   }
 
   .glass-panel {
-    @apply rounded-3xl border border-white/[0.08] bg-white/[0.03] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] backdrop-blur-xl;
+    @apply rounded-3xl border border-white/[0.08] bg-white/[0.03] shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] backdrop-blur-md md:backdrop-blur-xl;
   }
 
   .glass-panel-luxe {
-    @apply rounded-3xl border border-white/[0.1] bg-white/[0.045] shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset,0_24px_80px_-32px_rgba(0,0,0,0.65)] backdrop-blur-2xl;
+    @apply rounded-3xl border border-white/[0.1] bg-white/[0.045] shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset,0_24px_80px_-32px_rgba(0,0,0,0.65)] backdrop-blur-md md:backdrop-blur-2xl;
   }
 
   .glow-ring {
@@ -437,7 +437,7 @@ body {
 /* ── Mobile performance: touch/pointer-coarse devices ───────────────────── */
 @media (hover: none) and (pointer: coarse) {
 
-  /* 1. Kill all CSS animations that don't affect layout */
+  /* 1. Kill CSS animations that run indefinitely (saves battery + CPU) */
   .animate-aurora,
   .animate-scanline,
   .animate-float,
@@ -447,8 +447,8 @@ body {
     animation: none !important;
   }
 
-  /* 2. Remove ALL backdrop-blur — single biggest GPU/scroll win.
-        Glass panels stay readable via the opaque bg fallback below. */
+  /* 2. Remove backdrop-blur — single biggest GPU/scroll win.
+        Glass panels stay readable via the opaque bg fallback. */
   [class*="backdrop-blur"],
   [class*="backdrop-saturate"] {
     backdrop-filter: none !important;
@@ -470,15 +470,43 @@ body {
     filter: blur(60px) !important;
   }
 
-  /* 5. Promote fixed bg to its own compositor layer — avoids re-paint on scroll */
-  body > * {
-    -webkit-overflow-scrolling: touch;
+  /* 5. Promote EVERY section to its own GPU compositor layer.
+        This is the key fix — the browser caches each section as a texture
+        so scrolling is just moving textures, zero re-paint. */
+  #services,
+  #vision,
+  #tech-stack,
+  #process,
+  #contact {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
   }
 
-  /* 6. Contain fixed decorative layers so they don't trigger full-page repaints */
-  [style*="position: fixed"],
-  .fixed {
+  /* 6. Contain paint within each service card — prevents one card's
+        blur/shadow from triggering repaint on neighboring cards */
+  .glass-panel-luxe {
+    contain: layout style paint;
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+
+  /* 7. Offscreen cards skip rendering entirely until scrolled near */
+  #services .glass-panel-luxe {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+  }
+
+  /* 8. Promote fixed decorative layers to their own compositor layer */
+  .fixed,
+  [style*="position: fixed"] {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
     contain: layout style;
+  }
+
+  /* 9. Smooth touch scrolling */
+  body > * {
+    -webkit-overflow-scrolling: touch;
   }
 }
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const Lead = require("../models/Lead");
-const { sendInquiryConfirmation } = require("../utils/mailer");
+const { sendInquiryConfirmation, sendAdminNotification } = require("../utils/mailer");
 
 const crypto = require("crypto");
 const router = express.Router();
@@ -46,6 +46,10 @@ router.post("/", submitLimiter, async (req, res) => {
     // Send confirmation email (non-blocking)
     sendInquiryConfirmation({ name: lead.name, email: lead.email, trackingId: lead.trackingId, projectType: lead.projectType })
       .catch((err) => console.error("[mailer] Confirmation failed:", err.message));
+
+    // Send full details email to the Admin (non-blocking)
+    sendAdminNotification(lead)
+      .catch((err) => console.error("[mailer] Admin notification failed:", err.message));
 
     res.status(201).json({
       id: lead._id,
