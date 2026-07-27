@@ -14,6 +14,7 @@ import {
   resetAdminPassword,
   type LeadRow,
 } from "@/lib/api";
+import ContentManager from "./ContentManager";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -450,6 +451,8 @@ export default function AdminDashboardPage() {
             <p className="text-sm text-white/35">No messages.</p>
           )}
         </div>
+        
+        <ContentManager />
       </div>
     </div>
   );

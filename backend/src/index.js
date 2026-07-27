@@ -55,6 +55,9 @@ app.get("/api/health", (req, res) => {
 app.use("/api/leads", leadsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/admin/projects", require("./routes/projects"));
+app.use("/api/admin/services", require("./routes/services"));
+app.use("/api/chat", require("./routes/chat"));
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

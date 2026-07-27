@@ -1,4 +1,4 @@
-const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const base = process.env.NEXT_PUBLIC_API_URL || "";
 
 export function apiUrl(path: string) {
   const p = path.startsWith("/") ? path : `/${path}`;
@@ -69,8 +69,13 @@ export async function resetAdminPassword(currentPassword: string, newPassword: s
 }
 
 export async function adminMe() {
-  const res = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
-  return res.json() as Promise<{ authenticated: boolean; email?: string }>;
+  try {
+    const res = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
+    if (!res.ok) return { authenticated: false };
+    return res.json() as Promise<{ authenticated: boolean; email?: string }>;
+  } catch (err) {
+    return { authenticated: false };
+  }
 }
 
 export async function adminLogout() {
@@ -147,4 +152,52 @@ export async function deleteLead(id: string) {
     const data = await res.json().catch(() => ({}));
     throw new Error((data as { error?: string }).error || "Delete failed");
   }
+}
+
+export type ProjectRow = {
+  _id: string;
+  title: string;
+  ai_summary: string;
+  isFeatured: boolean;
+};
+
+export async function fetchProjects() {
+  const res = await fetch(apiUrl("/api/admin/projects"), { credentials: "include" });
+  if (!res.ok) throw new Error("Failed to load projects");
+  return res.json() as Promise<ProjectRow[]>;
+}
+
+export async function createProject(data: { title: string; ai_summary: string; isFeatured: boolean }) {
+  const res = await fetch(apiUrl("/api/admin/projects"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create project");
+  return res.json();
+}
+
+export type ServiceRow = {
+  _id: string;
+  name: string;
+  ai_summary: string;
+  isActive: boolean;
+};
+
+export async function fetchServices() {
+  const res = await fetch(apiUrl("/api/admin/services"), { credentials: "include" });
+  if (!res.ok) throw new Error("Failed to load services");
+  return res.json() as Promise<ServiceRow[]>;
+}
+
+export async function createService(data: { name: string; ai_summary: string; isActive: boolean }) {
+  const res = await fetch(apiUrl("/api/admin/services"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create service");
+  return res.json();
 }

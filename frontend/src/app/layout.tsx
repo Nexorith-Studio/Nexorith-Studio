@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import ChatWidget from "@/components/ChatWidget";
 import "./globals.css";
 
 const inter = Inter({
@@ -61,6 +62,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased bg-bg text-white">
         <SmoothScroll>{children}</SmoothScroll>
+        <ChatWidget />
       </body>
     </html>
   );
