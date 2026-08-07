@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, X, Send, Loader2, ArrowRight } from "lucide-react";
+import { X, Send, Loader2, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 // For Next.js we use NEXT_PUBLIC variables
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "") + "/api/chat";
@@ -19,7 +20,7 @@ export default function ChatWidget() {
   const [leadSubmitted, setLeadSubmitted] = useState(false);
 
   // Lazy initialize from sessionStorage to prevent wipeouts on refresh
-  const [messages, setMessages] = useState<any[]>(() => {
+  const [messages, setMessages] = useState<Array<{role: string; text: string}>>(() => {
     if (typeof window !== "undefined") {
       const saved = sessionStorage.getItem("nexorith_chat");
       if (saved) return JSON.parse(saved);
@@ -59,7 +60,7 @@ export default function ChatWidget() {
 
       const data = await response.json();
       setMessages([...newHistory, { role: "model", text: data.reply || "Something went wrong." }]);
-    } catch (error) {
+    } catch {
       setMessages([...newHistory, { role: "model", text: "Network error. Please try again." }]);
     } finally {
       setIsLoading(false);
@@ -88,7 +89,7 @@ export default function ChatWidget() {
     }
   };
 
-  const renderMessageContent = (msg: any, idx: number) => {
+  const renderMessageContent = (msg: {role: string; text: string}, idx: number) => {
     const isModel = msg.role === "model";
     const hasFormTrigger = isModel && msg.text.includes("[SHOW_LEAD_FORM]");
     const cleanText = msg.text.replace("[SHOW_LEAD_FORM]", "").trim();
@@ -179,7 +180,7 @@ export default function ChatWidget() {
         whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-lg text-white transition-transform"
       >
-        {isOpen ? <X size={24} /> : <img src="/memoji.jpg" alt="AI Chatbot" className="w-full h-full object-cover rounded-full" />}
+        {isOpen ? <X size={24} /> : <Image src="/memoji.jpg" alt="AI Chatbot" width={56} height={56} className="w-full h-full object-cover rounded-full" />}
       </motion.button>
     </div>
   );

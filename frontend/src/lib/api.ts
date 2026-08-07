@@ -73,7 +73,7 @@ export async function adminMe() {
     const res = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
     if (!res.ok) return { authenticated: false };
     return res.json() as Promise<{ authenticated: boolean; email?: string }>;
-  } catch (err) {
+  } catch {
     return { authenticated: false };
   }
 }

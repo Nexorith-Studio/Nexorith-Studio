@@ -24,8 +24,8 @@ export default function ContentManager() {
       setProjectTitle("");
       setProjectSummary("");
       setIsFeatured(false);
-    } catch (err: any) {
-      setProjectMsg(err.message || "Failed to add project.");
+    } catch (err: unknown) {
+      setProjectMsg(err instanceof Error ? err.message : "Failed to add project.");
     } finally {
       setProjectLoading(false);
     }
@@ -41,8 +41,8 @@ export default function ContentManager() {
       setServiceName("");
       setServiceSummary("");
       setIsActive(true);
-    } catch (err: any) {
-      setServiceMsg(err.message || "Failed to add service.");
+    } catch (err: unknown) {
+      setServiceMsg(err instanceof Error ? err.message : "Failed to add service.");
     } finally {
       setServiceLoading(false);
     }
